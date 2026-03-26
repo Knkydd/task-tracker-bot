@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikary:
+      schema: task_tracker_bot_schema
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS task_tracker_bot_schema
+    jpa:
+      generate-ddl: true
+      show-sql: false
+
+app:
+  properties:
+    uri: "https://api.telegram.org/bot"
+    token: "${TELEGRAM_BOT_TOKEN}"
+    sleep-update-listener: 1s
+  messages:
+    start: "Добро пожаловать. Введите команду /help чтобы узнать все команды бота"
+    help: "Доступные команды:
+            /add - Добавить новую задачу
+            /view - Посмотреть все задачи
+            /view
+            /complete - 
+            /delete - Удалить задачу
+    "
+    add-task:
+    complete-task: "Укажите номер задачи, которую вы выполнили"
+    delete-task: "Для того, чтобы удалить задачу, введите номер задачи"
+    unknown: "Неизвестная команда. Введите команду /help чтобы узнать все команды бота"
+
