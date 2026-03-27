@@ -24,9 +24,7 @@ public class TaskCategoryService {
             return taskCategory.get();
         }
         try {
-            TaskCategory newTackCategory = new TaskCategory();
-            newTackCategory.setName(category);
-            return taskCategoryRepository.saveAndFlush(newTackCategory);
+            return taskCategoryRepository.saveAndFlush(new TaskCategory(category));
         } catch (DataIntegrityViolationException e) {
             return taskCategoryRepository.findByName(category).orElseThrow(() -> e);
         }
