@@ -1,14 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    url: jdbc:postgresql://localhost:55432/${DB_NAME}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-    hikary:
+    hikari:
       schema: task_tracker_bot_schema
       connection-init-sql: CREATE SCHEMA IF NOT EXISTS task_tracker_bot_schema
-    jpa:
-      generate-ddl: true
-      show-sql: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    show-sql: false
 
 app:
   properties:
@@ -17,15 +19,22 @@ app:
     sleep-update-listener: 1s
   messages:
     start: "Добро пожаловать. Введите команду /help чтобы узнать все команды бота"
-    help: "Доступные команды:
-            /add - Добавить новую задачу
-            /view - Посмотреть все задачи
-            /view
-            /complete - 
-            /delete - Удалить задачу
+    help: "Доступные команды:\n
+            /add - Добавить новую задачу\n
+            /view - Посмотреть все задачи\n
+            /complete - Отметить выполненную задачу\n
+            /delete - Удалить задачу\n
     "
     add-task:
-    complete-task: "Укажите номер задачи, которую вы выполнили"
-    delete-task: "Для того, чтобы удалить задачу, введите номер задачи"
+      add-category: "Укажите категорию задачи"
+      add-description: "Укажите описание задачи"
+      complete-add: "Задача успешно добавлена"
+      error: "Что то пошло не так"
+    complete-task:
+      process: "Укажите номер задачи, которую вы выполнили"
+      complete: "Поздравляю с выполнением задачи!"
+    delete-task:
+      delete: "Для того, чтобы удалить задачу, введите номер задачи"
+      complete: "Удаление успешно"
     unknown: "Неизвестная команда. Введите команду /help чтобы узнать все команды бота"
 
