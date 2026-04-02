@@ -1,8 +1,11 @@
 package com.github.knkydd.backend.tasktracker.bot.session.state.impl;
 
+import com.github.knkydd.backend.tasktracker.bot.exception.DeleteTaskException;
+import com.github.knkydd.backend.tasktracker.bot.exception.NoSuchTaskInRepositoryException;
+import com.github.knkydd.backend.tasktracker.bot.exception.NotANumberException;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
-import com.github.knkydd.backend.tasktracker.bot.session.IdValidator;
+import com.github.knkydd.backend.tasktracker.bot.validator.IdValidator;
 import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
@@ -34,28 +37,47 @@ public class WaitingTaskToDeleteState implements UserState {
     public boolean handle(BotContext botContext, UserSession session) {
         String maybeNumber = botContext.message();
         long chatId = botContext.chatId();
-        if(!validator.isValidated(maybeNumber)){
-            log.warn("Получено не число. Ошибка выполнения команды");
+        try {
+            validate(maybeNumber);
+            long taskId = Long.parseLong(maybeNumber);
+            taskService.deleteByTaskIdAndChatId(taskId, chatId);
+            log.info("Удаление прошло успешно");
+            sendTextCompleteDeleted(botContext);
+            service.reset(chatId);
+            return true;
+        } catch (NoSuchTaskInRepositoryException | NotANumberException e) {
+            sendTextErrorIdValidate(botContext);
+            log.error(e.getMessage());
+            service.reset(chatId);
+            return false;
+        } catch (DeleteTaskException e) {
+            sendTextErrorDbDelete(botContext);
+            log.error(e.getMessage());
+            service.reset(chatId);
+            return false;
+        } catch (Exception e) {
+            log.error("Возникла неизвестная ошибка! {}", e.getMessage());
             service.reset(chatId);
             return false;
         }
-        long taskId = Long.parseLong(maybeNumber);
-
-        if(!taskService.deleteByTaskIdAndChatId(taskId,chatId)){
-            log.warn("Нельзя удалить данную таску");
-            service.reset(chatId);
-            return false;
-        }
-
-        log.info("Удаление прошло успешно");
-
-        sendCompleteText(botContext);
-        service.reset(chatId);
-        return true;
     }
 
-    private void sendCompleteText(BotContext botContext){
-        String text = property.getDeleteTask().getComplete();
+    private void validate(String maybeNumber) throws NotANumberException, NoSuchTaskInRepositoryException {
+        validator.isValidated(maybeNumber);
+    }
+
+    private void sendTextCompleteDeleted(BotContext botContext) {
+        String text = property.getDeleteTask().getCompleteDelete();
+        botContext.reply(text);
+    }
+
+    private void sendTextErrorIdValidate(BotContext botContext) {
+        String text = property.getError().getDeleteErrors().getIdValidate();
+        botContext.reply(text);
+    }
+
+    private void sendTextErrorDbDelete(BotContext botContext) {
+        String text = property.getError().getDeleteErrors().getDbDelete();
         botContext.reply(text);
     }
 }

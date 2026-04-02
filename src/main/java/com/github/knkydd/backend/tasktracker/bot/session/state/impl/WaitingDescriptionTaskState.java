@@ -1,11 +1,11 @@
 package com.github.knkydd.backend.tasktracker.bot.session.state.impl;
 
+import com.github.knkydd.backend.tasktracker.bot.exception.GetOrCreateUserException;
+import com.github.knkydd.backend.tasktracker.bot.exception.SaveTaskException;
 import com.github.knkydd.backend.tasktracker.bot.model.Task;
 import com.github.knkydd.backend.tasktracker.bot.model.TaskCategory;
 import com.github.knkydd.backend.tasktracker.bot.model.User;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
-import com.github.knkydd.backend.tasktracker.bot.repository.TaskRepository;
-import com.github.knkydd.backend.tasktracker.bot.repository.UserRepository;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
 import com.github.knkydd.backend.tasktracker.bot.service.UserService;
 import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
@@ -13,10 +13,12 @@ import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.session.state.UserState;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
+import com.github.knkydd.backend.tasktracker.bot.validator.DescriptionValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,6 +33,8 @@ public class WaitingDescriptionTaskState implements UserState {
 
     private final SessionService service;
 
+    private final DescriptionValidator validator;
+
     @Override
     public StateType getStateType() {
         return StateType.WAITING_DESCRIPTION_TASK;
@@ -40,38 +44,55 @@ public class WaitingDescriptionTaskState implements UserState {
     public boolean handle(BotContext botContext, UserSession session) {
         long chatId = botContext.chatId();
         String description = botContext.message();
-        if (description.startsWith("/")) {
-            log.warn("Пользователь {} прервал ввод категории таски другой командой. Команда: {}", chatId, description);
-            sendWarningText(botContext);
+        try {
+            validate(description);
+            Optional<User> user = userService.getOrCreateByChatId(chatId);
+            TaskCategory category = session.getCategory();
+            Task task = new Task(category, user.get(), description);
+            taskService.saveAndFlush(task);
+            log.info("Таска с номером {} успешно сохранена!", task.getTaskId());
+
+            sendTextCompleteAdd(botContext);
+            service.reset(botContext.chatId());
+            return true;
+        } catch (IllegalArgumentException e) {
+            log.warn(e.getMessage());
+            sendTextErrorDescriptionValidate(botContext);
+            service.reset(chatId);
+            return false;
+        } catch (GetOrCreateUserException e) {
+            log.error(e.getMessage());
+            sendTextErrorDescriptionSaveUser(botContext);
+            service.reset(chatId);
+            return false;
+        } catch (SaveTaskException e) {
+            log.error(e.getMessage());
+            sendTextErrorDescriptionSaveTask(botContext);
             service.reset(chatId);
             return false;
         }
-
-        Task task = new Task();
-        TaskCategory category = session.getCategory();
-        task.setDescription(description);
-        task.setCategory(category);
-
-        User user = userService.getOrCreateByChatId(chatId);
-        task.setUser(user);
-
-        log.info("Попытка сохранения таски с номером {}", task.getTaskId());
-
-        taskService.saveAndFlush(task);
-
-        log.info("Таска с номером {} успешно сохранена!", task.getTaskId());
-
-        sendSuccessfullyText(botContext);
-        service.reset(botContext.chatId());
-        return true;
     }
 
-    private void sendWarningText(BotContext botContext) {
-        String text = property.getAddTask().getError();
+    private void validate(String description) throws IllegalArgumentException {
+        validator.isValidated(description);
+    }
+
+    private void sendTextErrorDescriptionValidate(BotContext botContext) {
+        String text = property.getError().getAddErrors().getDescriptionValidate();
         botContext.reply(text);
     }
 
-    private void sendSuccessfullyText(BotContext botContext) {
+    private void sendTextErrorDescriptionSaveUser(BotContext botContext) {
+        String text = property.getError().getAddErrors().getDescriptionSaveUser();
+        botContext.reply(text);
+    }
+
+    private void sendTextErrorDescriptionSaveTask(BotContext botContext) {
+        String text = property.getError().getAddErrors().getDescriptionSaveTask();
+        botContext.reply(text);
+    }
+
+    private void sendTextCompleteAdd(BotContext botContext) {
         String text = property.getAddTask().getCompleteAdd();
         botContext.reply(text);
     }
