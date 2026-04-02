@@ -36,9 +36,6 @@ public class MessageProperty {
 
         @NotNull
         private String completeAdd;
-
-        @NotNull
-        private String error;
     }
 
     @NotNull
@@ -49,10 +46,10 @@ public class MessageProperty {
     @Valid
     public static class CompleteTask {
         @NotNull
-        private String process;
+        private String processComplete;
 
         @NotNull
-        private String complete;
+        private String completeSuccess;
     }
 
     @NotNull
@@ -63,12 +60,76 @@ public class MessageProperty {
     @Valid
     public static class DeleteTask {
         @NotNull
-        private String delete;
+        private String processDelete;
 
         @NotNull
-        private String complete;
+        private String completeDelete;
     }
 
+    @NotNull
+    private Errors error;
+
+    @Getter
+    @Setter
+    @Valid
+    public static class Errors {
+
+        @NotNull
+        private AddErrors addErrors;
+
+        @NotNull
+        private CompleteErrors completeErrors;
+
+        @NotNull
+        private DeleteErrors deleteErrors;
+
+        @NotNull
+        private String unknownError;
+
+        @Getter
+        @Setter
+        @Valid
+        public static class AddErrors {
+
+            @NotNull
+            private String categoryValidate;
+
+            @NotNull
+            private String CategorySave;
+
+            @NotNull
+            private String DescriptionValidate;
+
+            @NotNull
+            private String DescriptionSaveUser;
+
+            @NotNull
+            private String DescriptionSaveTask;
+        }
+
+        @Getter
+        @Setter
+        @Valid
+        public static class CompleteErrors {
+
+            @NotNull
+            private String idValidate;
+
+            @NotNull
+            private String dbDelete;
+        }
+
+        @Getter
+        @Setter
+        @Valid
+        public static class DeleteErrors {
+            @NotNull
+            private String idValidate;
+
+            @NotNull
+            private String dbDelete;
+        }
+    }
     @NotNull
     private String unknown;
 }
