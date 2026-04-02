@@ -2,7 +2,7 @@ package com.github.knkydd.backend.tasktracker.bot.command.impl;
 
 import com.github.knkydd.backend.tasktracker.bot.command.Command;
 import com.github.knkydd.backend.tasktracker.bot.model.Task;
-import com.github.knkydd.backend.tasktracker.bot.repository.TaskRepository;
+import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ViewTasksCommand implements Command {
 
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
     @Override
     public void handle(BotContext botContext) {
@@ -35,13 +35,13 @@ public class ViewTasksCommand implements Command {
         return "";
     }
 
-    private List<Task> getTasksByChatId(long chatId){
-        return taskRepository.findAllByUserChatId(chatId);
+    private List<Task> getTasksByChatId(long chatId) {
+        return taskService.findAllByChatId(chatId);
     }
 
-    private String createTextWithTasks(List<Task> tasks){
+    private String createTextWithTasks(List<Task> tasks) {
         StringBuilder stringBuilder = new StringBuilder("Ваши задачи:\n");
-        for(Task task : tasks){
+        for (Task task : tasks) {
             stringBuilder.append("Id задачи: ").append(task.getTaskId()).append("\n");
             stringBuilder.append("Категория задачи: ").append(task.getCategory().getName()).append("\n");
             stringBuilder.append("Описание задачи: ").append(task.getDescription()).append("\n");
