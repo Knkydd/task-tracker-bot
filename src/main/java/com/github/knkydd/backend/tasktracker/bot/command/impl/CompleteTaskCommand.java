@@ -33,10 +33,10 @@ public class CompleteTaskCommand implements Command {
 
     @Override
     public String description() {
-        return property.getCompleteTask().getProcess();
+        return property.getCompleteTask().getProcessComplete();
     }
 
-    private void setStateToWaitingCompleteTask(long chatId){
+    private void setStateToWaitingCompleteTask(long chatId) {
         UserSession session = service.getOrCreate(chatId);
         session.setStateType(StateType.WAITING_COMPLETED_TASK);
         service.save(session);

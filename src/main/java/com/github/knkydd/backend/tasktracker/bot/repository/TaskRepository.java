@@ -9,6 +9,8 @@ public interface TaskRepository {
 
     List<Task> findAllByUserChatId(long chatId);
 
+    Optional<Task> findByTaskIdAndUserChatId(long id, long chatId);
+
     Optional<Task> findByTaskId(long id);
 
     Task saveAndFlush(Task task);

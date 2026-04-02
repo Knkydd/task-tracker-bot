@@ -18,10 +18,11 @@ public class AddTaskCommand implements Command {
     private final MessageProperty property;
 
     private final SessionService service;
+
     @Override
     public void handle(BotContext botContext) {
         botContext.reply(description());
-        log.info("Ожидание категории таски");
+        log.info("Ожидание категории задачи");
         setStateToWaitingCategory(botContext.chatId());
     }
 
@@ -35,7 +36,7 @@ public class AddTaskCommand implements Command {
         return property.getAddTask().getAddCategory();
     }
 
-    private void setStateToWaitingCategory(long chatId){
+    private void setStateToWaitingCategory(long chatId) {
         UserSession session = service.getOrCreate(chatId);
         session.setStateType(StateType.WAITING_CATEGORY_TASK);
         service.save(session);

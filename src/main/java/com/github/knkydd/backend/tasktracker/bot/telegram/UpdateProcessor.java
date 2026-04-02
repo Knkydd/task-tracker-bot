@@ -22,17 +22,20 @@ public class UpdateProcessor {
 
     private final StateFactory factory;
 
-    public void process(BotContext botContext){
+    public void process(BotContext botContext) {
         long chatId = botContext.chatId();
         UserSession session = sessionService.getOrCreate(chatId);
 
-        if(session.getStateType() != StateType.IDLE){
+        if (session.getStateType() != StateType.IDLE) {
             UserState state = factory.getUserState(session.getStateType());
 
             boolean accepted = state.handle(botContext, session);
             sessionService.save(session);
 
-            if(accepted){
+            if (accepted) {
+                return;
+            } else {
+                log.warn("Выполнение команды завершено с ошибкой");
                 return;
             }
         }

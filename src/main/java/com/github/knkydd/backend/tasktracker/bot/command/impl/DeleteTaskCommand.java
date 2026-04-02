@@ -33,10 +33,10 @@ public class DeleteTaskCommand implements Command {
 
     @Override
     public String description() {
-        return property.getDeleteTask().getDelete();
+        return property.getDeleteTask().getProcessDelete();
     }
 
-    private void setStateToWaitingTaskToDelete(long chatId){
+    private void setStateToWaitingTaskToDelete(long chatId) {
         UserSession session = service.getOrCreate(chatId);
         session.setStateType(StateType.WAITING_TASK_TO_DELETE);
         service.save(session);

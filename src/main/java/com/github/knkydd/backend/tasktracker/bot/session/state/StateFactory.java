@@ -11,11 +11,11 @@ public class StateFactory {
 
     private final Map<StateType, UserState> states;
 
-    public StateFactory(List<UserState> userStates){
-        this.states = userStates.stream().collect(Collectors.toMap(UserState::getStateType, s->s));
+    public StateFactory(List<UserState> userStates) {
+        this.states = userStates.stream().collect(Collectors.toMap(UserState::getStateType, s -> s));
     }
 
-    public UserState getUserState(StateType stateType){
+    public UserState getUserState(StateType stateType) {
         return states.get(stateType);
     }
 }

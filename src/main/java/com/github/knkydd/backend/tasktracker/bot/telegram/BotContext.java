@@ -10,15 +10,15 @@ public class BotContext {
 
     private final BotClient bot;
 
-    public long chatId(){
+    public long chatId() {
         return update.message().chat().id();
     }
 
-    public String message(){
+    public String message() {
         return update.message().text();
     }
 
-    public void reply(String text){
+    public void reply(String text) {
         bot.sendMessage(text, chatId());
     }
 }
