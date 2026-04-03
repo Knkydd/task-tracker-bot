@@ -58,22 +58,19 @@ public class WaitingDescriptionTaskState implements UserState {
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
             sendTextErrorDescriptionValidate(botContext);
-            service.reset(chatId);
             return false;
         } catch (GetOrCreateUserException e) {
             log.error(e.getMessage());
             sendTextErrorDescriptionSaveUser(botContext);
-            service.reset(chatId);
             return false;
         } catch (SaveTaskException e) {
             log.error(e.getMessage());
             sendTextErrorDescriptionSaveTask(botContext);
-            service.reset(chatId);
             return false;
         }
     }
 
-    private void validate(String description) throws IllegalArgumentException {
+    private void validate(String description) {
         validator.isValidated(description);
     }
 

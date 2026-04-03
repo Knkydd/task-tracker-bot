@@ -36,7 +36,6 @@ public class WaitingCategoryTaskState implements UserState {
 
     @Override
     public boolean handle(BotContext botContext, UserSession session) {
-        long chatId = botContext.chatId();
         try {
             String category = botContext.message();
             validate(category);
@@ -47,24 +46,22 @@ public class WaitingCategoryTaskState implements UserState {
             session.setStateType(StateType.WAITING_DESCRIPTION_TASK);
 
             return true;
+
         } catch (IllegalArgumentException e) {
             log.warn("Возникла ошибка валидации. {}", e.getMessage());
             sendTextErrorCategoryValidate(botContext);
-            service.reset(chatId);
             return false;
         } catch (GetOrCreateCategoryException e) {
             log.error(e.getMessage());
             sendTextErrorCategorySave(botContext);
-            service.reset(chatId);
             return false;
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
-            service.reset(chatId);
             return false;
         }
     }
 
-    private void validate(String category) throws IllegalArgumentException {
+    private void validate(String category) {
         validator.isValidated(category);
     }
 

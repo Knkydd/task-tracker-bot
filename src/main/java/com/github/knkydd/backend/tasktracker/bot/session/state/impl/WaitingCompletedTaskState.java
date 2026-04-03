@@ -35,31 +35,26 @@ public class WaitingCompletedTaskState implements UserState {
 
     @Override
     public boolean handle(BotContext botContext, UserSession session) {
-        String maybeNumber = botContext.message();
-        long chatId = botContext.chatId();
         try {
-            validate(maybeNumber);
+            String maybeNumber = botContext.message();
+            long chatId = botContext.chatId();
+            validate(maybeNumber, chatId);
             long taskId = Long.parseLong(maybeNumber);
             taskService.deleteByTaskIdAndChatId(taskId, chatId);
 
             sendTextCompleteSuccess(botContext);
             log.info("Таска успешно выполнена и удалена");
-
             service.reset(chatId);
-
             return true;
         } catch (NotANumberException | NoSuchTaskInRepositoryException e) {
             sendTextErrorIdValidate(botContext);
-            service.reset(chatId);
             return false;
         } catch (DeleteTaskException e) {
             sendTextErrorWithDelete(botContext);
             log.error(e.getMessage());
-            service.reset(chatId);
             return false;
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
-            service.reset(chatId);
             return false;
         }
     }
@@ -79,7 +74,7 @@ public class WaitingCompletedTaskState implements UserState {
         botContext.reply(text);
     }
 
-    private void validate(String maybeNumber) throws NoSuchTaskInRepositoryException, NotANumberException {
-        validator.isValidated(maybeNumber);
+    private void validate(String maybeNumber, long chatId) {
+        validator.isValidated(maybeNumber, chatId);
     }
 }

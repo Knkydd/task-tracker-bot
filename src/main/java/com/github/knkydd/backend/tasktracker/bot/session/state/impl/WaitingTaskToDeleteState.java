@@ -35,10 +35,10 @@ public class WaitingTaskToDeleteState implements UserState {
 
     @Override
     public boolean handle(BotContext botContext, UserSession session) {
-        String maybeNumber = botContext.message();
-        long chatId = botContext.chatId();
         try {
-            validate(maybeNumber);
+            String maybeNumber = botContext.message();
+            long chatId = botContext.chatId();
+            validate(maybeNumber, chatId);
             long taskId = Long.parseLong(maybeNumber);
             taskService.deleteByTaskIdAndChatId(taskId, chatId);
             log.info("Удаление прошло успешно");
@@ -48,22 +48,19 @@ public class WaitingTaskToDeleteState implements UserState {
         } catch (NoSuchTaskInRepositoryException | NotANumberException e) {
             sendTextErrorIdValidate(botContext);
             log.error(e.getMessage());
-            service.reset(chatId);
             return false;
         } catch (DeleteTaskException e) {
             sendTextErrorDbDelete(botContext);
             log.error(e.getMessage());
-            service.reset(chatId);
             return false;
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
-            service.reset(chatId);
             return false;
         }
     }
 
-    private void validate(String maybeNumber) throws NotANumberException, NoSuchTaskInRepositoryException {
-        validator.isValidated(maybeNumber);
+    private void validate(String maybeNumber, long chatId) {
+        validator.isValidated(maybeNumber, chatId);
     }
 
     private void sendTextCompleteDeleted(BotContext botContext) {
