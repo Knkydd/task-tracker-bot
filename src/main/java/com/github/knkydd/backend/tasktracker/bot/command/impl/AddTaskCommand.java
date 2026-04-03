@@ -16,8 +16,6 @@ public class AddTaskCommand implements Command {
 
     private final MessageProperty property;
 
-    private final SessionService service;
-
     @Override
     public void handle(BotContext botContext) {
         botContext.reply(description());
