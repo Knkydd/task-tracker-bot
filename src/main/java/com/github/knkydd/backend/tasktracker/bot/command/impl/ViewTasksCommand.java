@@ -2,6 +2,7 @@ package com.github.knkydd.backend.tasktracker.bot.command.impl;
 
 import com.github.knkydd.backend.tasktracker.bot.command.Command;
 import com.github.knkydd.backend.tasktracker.bot.model.Task;
+import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
@@ -16,13 +17,15 @@ import java.util.List;
 @AllArgsConstructor
 public class ViewTasksCommand implements Command {
 
+    private final MessageProperty property;
+
     private final TaskService taskService;
 
     @Override
     public void handle(BotContext botContext) {
         long chatId = botContext.chatId();
         List<Task> tasks = getTasksByChatId(chatId);
-        String text = createTextWithTasks(tasks);
+        String text = description() + "\n" + createTextWithTasks(tasks);
         botContext.reply(text);
     }
 
@@ -48,11 +51,11 @@ public class ViewTasksCommand implements Command {
 
     @Override
     public String description() {
-        return "";
+        return property.getView();
     }
 
     @Override
-    public StateType nextState(){
+    public StateType nextState() {
         return StateType.IDLE;
     }
 }
