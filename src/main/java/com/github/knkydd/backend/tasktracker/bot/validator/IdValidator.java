@@ -1,10 +1,8 @@
 package com.github.knkydd.backend.tasktracker.bot.validator;
 
-import com.github.knkydd.backend.tasktracker.bot.exception.NoSuchTaskInRepositoryException;
 import com.github.knkydd.backend.tasktracker.bot.exception.NotANumberException;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,24 +11,20 @@ public class IdValidator {
 
     private final TaskService taskService;
 
-    public void isValidated(String maybeNumber) {
+    public void isValidated(String maybeNumber, long chatId) {
         isNumber(maybeNumber);
-        isCorrectId(maybeNumber);
+        isTaskExists(maybeNumber, chatId);
     }
 
-    private void isNumber(String maybeNumber) throws NotANumberException {
+    private void isNumber(String maybeNumber) {
         try {
-            Long number = Long.parseLong(maybeNumber);
+            Long.parseLong(maybeNumber);
         } catch (NumberFormatException e) {
             throw new NotANumberException("Переданная строка не является числом. " + e.getMessage());
         }
     }
 
-    private void isCorrectId(String number) {
-        try {
-            taskService.existsTaskById(Long.parseLong(number));
-        } catch (DataAccessException e) {
-            throw new NoSuchTaskInRepositoryException(String.format("Задачи с номером %s не существует ", number) + e.getMessage());
-        }
+    private void isTaskExists(String number, long chatId) {
+        taskService.checkTaskExists(Long.parseLong(number), chatId);
     }
 }
