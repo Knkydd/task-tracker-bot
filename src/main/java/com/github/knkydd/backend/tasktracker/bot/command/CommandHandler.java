@@ -21,15 +21,13 @@ public class CommandHandler {
 
     private final SessionService service;
 
-    public void execute(BotContext botContext) {
+    public void execute(BotContext botContext, UserSession session) {
         String message = botContext.message().split(" ")[0];
         Command command = commands.getOrDefault(message, unknownCommand);
 
         log.info("Выполнение команды {} ...", command.command());
 
-        UserSession session = service.getOrCreate(botContext.chatId());
         session.setStateType(command.nextState());
-        service.save(session);
 
         command.handle(botContext);
     }

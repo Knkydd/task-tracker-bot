@@ -1,6 +1,5 @@
 package com.github.knkydd.backend.tasktracker.bot.telegram;
 
-
 import com.github.knkydd.backend.tasktracker.bot.command.CommandHandler;
 import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
@@ -32,14 +31,12 @@ public class UpdateProcessor {
             boolean accepted = state.handle(botContext, session);
             sessionService.save(session);
 
-            if (accepted) {
-                return;
-            } else {
-                log.warn("Выполнение команды завершено с ошибкой");
-                return;
+            if(!accepted){
+                sessionService.reset(chatId);
             }
+            return;
         }
 
-        commandHandler.execute(botContext);
+        commandHandler.execute(botContext, session);
     }
 }

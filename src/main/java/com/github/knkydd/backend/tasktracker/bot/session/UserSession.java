@@ -15,11 +15,11 @@ public class UserSession {
 
     private TaskCategory category;
 
-    public UserSession(long chatId){
+    public UserSession(long chatId) {
         this.chatId = chatId;
     }
 
-    public void clearTaskCategory(){
+    public void clearTaskCategory() {
         this.category = null;
     }
 
