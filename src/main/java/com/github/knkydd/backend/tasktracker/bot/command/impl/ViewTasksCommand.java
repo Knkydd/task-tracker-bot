@@ -3,6 +3,7 @@ package com.github.knkydd.backend.tasktracker.bot.command.impl;
 import com.github.knkydd.backend.tasktracker.bot.command.Command;
 import com.github.knkydd.backend.tasktracker.bot.model.Task;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
+import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +26,6 @@ public class ViewTasksCommand implements Command {
         botContext.reply(text);
     }
 
-    @Override
-    public String command() {
-        return "/view";
-    }
-
-    @Override
-    public String description() {
-        return "";
-    }
-
     private List<Task> getTasksByChatId(long chatId) {
         return taskService.findAllByChatId(chatId);
     }
@@ -48,5 +39,20 @@ public class ViewTasksCommand implements Command {
             stringBuilder.append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    @Override
+    public String command() {
+        return "/view";
+    }
+
+    @Override
+    public String description() {
+        return "";
+    }
+
+    @Override
+    public StateType nextState(){
+        return StateType.IDLE;
     }
 }

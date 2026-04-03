@@ -3,7 +3,6 @@ package com.github.knkydd.backend.tasktracker.bot.command.impl;
 import com.github.knkydd.backend.tasktracker.bot.command.Command;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
-import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ public class DeleteTaskCommand implements Command {
     public void handle(BotContext botContext) {
         botContext.reply(description());
         log.info("Ожидание номера задачи, которую нужно удалить");
-        setStateToWaitingTaskToDelete(botContext.chatId());
     }
 
     @Override
@@ -36,9 +34,8 @@ public class DeleteTaskCommand implements Command {
         return property.getDeleteTask().getProcessDelete();
     }
 
-    private void setStateToWaitingTaskToDelete(long chatId) {
-        UserSession session = service.getOrCreate(chatId);
-        session.setStateType(StateType.WAITING_TASK_TO_DELETE);
-        service.save(session);
+    @Override
+    public StateType nextState() {
+        return StateType.WAITING_TASK_TO_DELETE;
     }
 }

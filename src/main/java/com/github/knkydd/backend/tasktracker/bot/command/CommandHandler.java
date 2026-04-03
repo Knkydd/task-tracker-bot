@@ -1,6 +1,8 @@
 package com.github.knkydd.backend.tasktracker.bot.command;
 
 import com.github.knkydd.backend.tasktracker.bot.command.impl.UnknownCommand;
+import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
+import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +19,17 @@ public class CommandHandler {
 
     private final UnknownCommand unknownCommand;
 
+    private final SessionService service;
+
     public void execute(BotContext botContext) {
         String message = botContext.message().split(" ")[0];
         Command command = commands.getOrDefault(message, unknownCommand);
 
         log.info("Выполнение команды {} ...", command.command());
+
+        UserSession session = service.getOrCreate(botContext.chatId());
+        session.setStateType(command.nextState());
+        service.save(session);
 
         command.handle(botContext);
     }
