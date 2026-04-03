@@ -1,6 +1,7 @@
 package com.github.knkydd.backend.tasktracker.bot.service;
 
 import com.github.knkydd.backend.tasktracker.bot.exception.DeleteTaskException;
+import com.github.knkydd.backend.tasktracker.bot.exception.NoSuchTaskInRepositoryException;
 import com.github.knkydd.backend.tasktracker.bot.exception.SaveTaskException;
 import com.github.knkydd.backend.tasktracker.bot.model.Task;
 import com.github.knkydd.backend.tasktracker.bot.repository.TaskRepository;
@@ -10,9 +11,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,13 +23,10 @@ public class TaskService {
     @Transactional
     public void deleteByTaskIdAndChatId(long taskId, long chatId) {
         try {
-            Optional<Task> existsTask = taskRepository.findByTaskIdAndUserChatId(taskId ,chatId);
-            if (existsTask.isEmpty()) {
-                throw new DeleteTaskException("Такой задачи не существует");
-            }
+            checkTaskExists(taskId, chatId);
             taskRepository.deleteByTaskIdAndUserChatId(taskId, chatId);
-        } catch (DataAccessException e) {
-            throw new DeleteTaskException("Возникла ошибка удаления задачи " + e.getMessage());
+        } catch (NoSuchTaskInRepositoryException | DataAccessException e) {
+            throw new DeleteTaskException("Возникла ошибка удаления задачи: " + e.getMessage());
         }
     }
 
@@ -48,20 +44,13 @@ public class TaskService {
         try {
             return taskRepository.findAllByUserChatId(chatId);
         } catch (DataAccessException e) {
-            log.error("Возникла ошибка при поиске по chatId. {}", e.getMessage());
-            return Collections.<Task>emptyList();
+            throw new NoSuchTaskInRepositoryException("Возникла ошибка получения списка задач пользователя " + chatId);
         }
     }
 
-    @Transactional(readOnly = true)
-    public void existsTaskById(long taskId) {
-        try {
-            taskRepository.findByTaskId(taskId);
-        } catch (DataAccessException e) {
-            log.error("Возникла ошибка при работе с базой данных при поиске по taskId. {}", e.getMessage());
-        } catch (Exception e) {
-            log.error("Возникла неизвестная ошибка при поиске по taskId. {}", e.getMessage());
+    public void checkTaskExists(long taskId, long chatId) {
+        if (!taskRepository.existsByTaskIdAndUserChatId(taskId, chatId)) {
+            throw new NoSuchTaskInRepositoryException(String.format("Задачи с номером %s не существует.", taskId));
         }
     }
-
 }
