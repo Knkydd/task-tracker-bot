@@ -1,6 +1,7 @@
 package com.github.knkydd.backend.tasktracker.bot.command.impl;
 
 import com.github.knkydd.backend.tasktracker.bot.command.Command;
+import com.github.knkydd.backend.tasktracker.bot.exception.NoSuchTaskInRepositoryException;
 import com.github.knkydd.backend.tasktracker.bot.model.Task;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service("/view")
@@ -30,11 +32,16 @@ public class ViewTasksCommand implements Command {
     }
 
     private List<Task> getTasksByChatId(long chatId) {
-        return taskService.findAllByChatId(chatId);
+        try{
+            return taskService.findAllByChatId(chatId);
+        } catch (NoSuchTaskInRepositoryException e){
+            log.error(e.getMessage());
+            return Collections.<Task>emptyList();
+        }
     }
 
     private String createTextWithTasks(List<Task> tasks) {
-        StringBuilder stringBuilder = new StringBuilder("Ваши задачи:\n");
+        StringBuilder stringBuilder = new StringBuilder();
         for (Task task : tasks) {
             stringBuilder.append("Id задачи: ").append(task.getTaskId()).append("\n");
             stringBuilder.append("Категория задачи: ").append(task.getCategory().getName()).append("\n");

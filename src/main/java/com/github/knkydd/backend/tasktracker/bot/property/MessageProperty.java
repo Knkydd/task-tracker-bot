@@ -22,6 +22,9 @@ public class MessageProperty {
     private String help;
 
     @NotNull
+    private String view;
+
+    @NotNull
     private AddTask addTask;
 
     @Getter
