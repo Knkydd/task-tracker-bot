@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryValidator {
 
-    public void isValidated(String category) {
+    public void checkValidated(String category) {
         checkCategoryOnCommand(category);
     }
 

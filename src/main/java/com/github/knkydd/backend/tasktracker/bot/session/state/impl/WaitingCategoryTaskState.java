@@ -51,7 +51,7 @@ public class WaitingCategoryTaskState implements UserState {
     }
 
     private void validate(String category) {
-        validator.isValidated(category);
+        validator.checkValidated(category);
     }
 
     private void sendTextErrorCategoryValidate(BotContext botContext) {
