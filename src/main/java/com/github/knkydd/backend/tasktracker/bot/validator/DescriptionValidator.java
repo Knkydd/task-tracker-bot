@@ -5,11 +5,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DescriptionValidator {
 
-    public void isValidated(String description) {
-        isNotACommand(description);
+    public void checkValidated(String description) {
+        checkDescriptionOnCommand(description);
     }
 
-    private void isNotACommand(String description) {
+    private void checkDescriptionOnCommand(String description) {
         if (description.startsWith("/")) {
             throw new IllegalArgumentException(String.format("Описание задачи: %s является командой", description.split(" ")[0]));
         }
