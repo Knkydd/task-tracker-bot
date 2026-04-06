@@ -48,19 +48,17 @@ public class WaitingTaskToDeleteState implements UserState {
         } catch (NoSuchTaskInRepositoryException | NotANumberException e) {
             sendTextErrorIdValidate(botContext);
             log.error(e.getMessage());
-            return false;
         } catch (DeleteTaskException e) {
             sendTextErrorDbDelete(botContext);
             log.error(e.getMessage());
-            return false;
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
-            return false;
         }
+        return false;
     }
 
     private void validate(String maybeNumber, long chatId) {
-        validator.isValidated(maybeNumber, chatId);
+        validator.checkValidated(maybeNumber, chatId);
     }
 
     private void sendTextCompleteDeleted(BotContext botContext) {

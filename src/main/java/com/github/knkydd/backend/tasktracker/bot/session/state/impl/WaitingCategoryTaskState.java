@@ -1,10 +1,7 @@
 package com.github.knkydd.backend.tasktracker.bot.session.state.impl;
 
 import com.github.knkydd.backend.tasktracker.bot.exception.GetOrCreateCategoryException;
-import com.github.knkydd.backend.tasktracker.bot.model.TaskCategory;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
-import com.github.knkydd.backend.tasktracker.bot.service.TaskCategoryService;
-import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.session.state.UserState;
@@ -14,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,10 +20,6 @@ public class WaitingCategoryTaskState implements UserState {
     private final MessageProperty property;
 
     private final CategoryValidator validator;
-
-    private final TaskCategoryService taskCategoryService;
-
-    private final SessionService service;
 
     @Override
     public StateType getStateType() {
@@ -39,10 +31,9 @@ public class WaitingCategoryTaskState implements UserState {
         try {
             String category = botContext.message();
             validate(category);
-            Optional<TaskCategory> taskCategory = taskCategoryService.getOrCreateCategory(category);
 
             sendTextAddDescriptionText(botContext);
-            session.setCategory(taskCategory.get());
+            session.setCategory(category);
             session.setStateType(StateType.WAITING_DESCRIPTION_TASK);
 
             return true;
@@ -50,15 +41,13 @@ public class WaitingCategoryTaskState implements UserState {
         } catch (IllegalArgumentException e) {
             log.warn("Возникла ошибка валидации. {}", e.getMessage());
             sendTextErrorCategoryValidate(botContext);
-            return false;
         } catch (GetOrCreateCategoryException e) {
             log.error(e.getMessage());
             sendTextErrorCategorySave(botContext);
-            return false;
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
-            return false;
         }
+        return false;
     }
 
     private void validate(String category) {

@@ -41,22 +41,19 @@ public class WaitingCompletedTaskState implements UserState {
             validate(maybeNumber, chatId);
             long taskId = Long.parseLong(maybeNumber);
             taskService.deleteByTaskIdAndChatId(taskId, chatId);
-
             sendTextCompleteSuccess(botContext);
             log.info("Таска успешно выполнена и удалена");
             service.reset(chatId);
             return true;
         } catch (NotANumberException | NoSuchTaskInRepositoryException e) {
             sendTextErrorIdValidate(botContext);
-            return false;
         } catch (DeleteTaskException e) {
             sendTextErrorWithDelete(botContext);
             log.error(e.getMessage());
-            return false;
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
-            return false;
         }
+        return false;
     }
 
     private void sendTextCompleteSuccess(BotContext botContext) {
@@ -75,6 +72,6 @@ public class WaitingCompletedTaskState implements UserState {
     }
 
     private void validate(String maybeNumber, long chatId) {
-        validator.isValidated(maybeNumber, chatId);
+        validator.checkValidated(maybeNumber, chatId);
     }
 }

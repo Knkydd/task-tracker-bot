@@ -6,6 +6,7 @@ import com.github.knkydd.backend.tasktracker.bot.model.Task;
 import com.github.knkydd.backend.tasktracker.bot.model.TaskCategory;
 import com.github.knkydd.backend.tasktracker.bot.model.User;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
+import com.github.knkydd.backend.tasktracker.bot.service.TaskCategoryService;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
 import com.github.knkydd.backend.tasktracker.bot.service.UserService;
 import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
@@ -18,8 +19,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -30,6 +29,8 @@ public class WaitingDescriptionTaskState implements UserState {
     private final TaskService taskService;
 
     private final UserService userService;
+
+    private final TaskCategoryService taskCategoryService;
 
     private final SessionService service;
 
@@ -46,9 +47,9 @@ public class WaitingDescriptionTaskState implements UserState {
         String description = botContext.message();
         try {
             validate(description);
-            Optional<User> user = userService.getOrCreateByChatId(chatId);
-            TaskCategory category = session.getCategory();
-            Task task = new Task(category, user.get(), description);
+            User user = userService.getOrCreateByChatId(chatId);
+            TaskCategory category = taskCategoryService.getOrCreateCategory(session.getCategory());
+            Task task = new Task(category, user, description);
             taskService.saveAndFlush(task);
             log.info("Таска с номером {} успешно сохранена!", task.getTaskId());
 
@@ -58,20 +59,18 @@ public class WaitingDescriptionTaskState implements UserState {
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
             sendTextErrorDescriptionValidate(botContext);
-            return false;
         } catch (GetOrCreateUserException e) {
             log.error(e.getMessage());
             sendTextErrorDescriptionSaveUser(botContext);
-            return false;
         } catch (SaveTaskException e) {
             log.error(e.getMessage());
             sendTextErrorDescriptionSaveTask(botContext);
-            return false;
         }
+        return false;
     }
 
     private void validate(String description) {
-        validator.isValidated(description);
+        validator.checkValidated(description);
     }
 
     private void sendTextErrorDescriptionValidate(BotContext botContext) {
