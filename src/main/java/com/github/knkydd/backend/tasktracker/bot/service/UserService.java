@@ -19,13 +19,10 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Optional<User> getOrCreateByChatId(long chatId) {
+    public User getOrCreateByChatId(long chatId) {
         try {
             Optional<User> user = userRepository.findById(chatId);
-            if (user.isPresent()) {
-                return user;
-            }
-            return Optional.ofNullable(userRepository.saveAndFlush(new User(chatId)));
+            return user.orElseGet(() -> userRepository.saveAndFlush(new User(chatId)));
         } catch (DataAccessException e) {
             throw new GetOrCreateUserException("Возникла ошибка создания или сохранения пользователя. "+ e.getMessage());
         }

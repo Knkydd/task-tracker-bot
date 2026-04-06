@@ -19,13 +19,10 @@ public class TaskCategoryService {
     private final TaskCategoryRepository taskCategoryRepository;
 
     @Transactional
-    public Optional<TaskCategory> getOrCreateCategory(String category) {
+    public TaskCategory getOrCreateCategory(String category) {
         try {
             Optional<TaskCategory> taskCategory = taskCategoryRepository.findByName(category);
-            if (taskCategory.isPresent()) {
-                return taskCategory;
-            }
-            return Optional.ofNullable(taskCategoryRepository.saveAndFlush(new TaskCategory(category)));
+            return taskCategory.orElseGet(() -> taskCategoryRepository.saveAndFlush(new TaskCategory(category)));
 
         } catch (DataAccessException e) {
             throw new GetOrCreateCategoryException("Возникла ошибка создания или сохранения" + e.getMessage());
