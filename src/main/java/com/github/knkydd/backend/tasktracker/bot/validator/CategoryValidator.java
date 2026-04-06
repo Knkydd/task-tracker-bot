@@ -1,15 +1,15 @@
 package com.github.knkydd.backend.tasktracker.bot.validator;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
-@Component
+@UtilityClass
 public class CategoryValidator {
 
-    public void checkValidated(String category) {
+    public static void checkValidated(String category) {
         checkCategoryOnCommand(category);
     }
 
-    private void checkCategoryOnCommand(String category) {
+    private static void checkCategoryOnCommand(String category) {
         if (category.startsWith("/")) {
             throw new IllegalArgumentException(String.format("Категория: %s является командой", category));
         }

@@ -34,7 +34,6 @@ public class WaitingDescriptionTaskState implements UserState {
 
     private final SessionService service;
 
-    private final DescriptionValidator validator;
 
     @Override
     public StateType getStateType() {
@@ -43,18 +42,21 @@ public class WaitingDescriptionTaskState implements UserState {
 
     @Override
     public boolean handle(BotContext botContext, UserSession session) {
-        long chatId = botContext.chatId();
-        String description = botContext.message();
         try {
-            validate(description);
+            long chatId = botContext.chatId();
+            String description = botContext.message();
+
+            DescriptionValidator.checkValidated(description);
             User user = userService.getOrCreateByChatId(chatId);
             TaskCategory category = taskCategoryService.getOrCreateCategory(session.getCategory());
             Task task = new Task(category, user, description);
+
             taskService.saveAndFlush(task);
             log.info("Таска с номером {} успешно сохранена!", task.getTaskId());
 
             sendTextCompleteAdd(botContext);
             service.reset(botContext.chatId());
+
             return true;
         } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
@@ -67,10 +69,6 @@ public class WaitingDescriptionTaskState implements UserState {
             sendTextErrorDescriptionSaveTask(botContext);
         }
         return false;
-    }
-
-    private void validate(String description) {
-        validator.checkValidated(description);
     }
 
     private void sendTextErrorDescriptionValidate(BotContext botContext) {

@@ -26,8 +26,6 @@ public class WaitingTaskToDeleteState implements UserState {
 
     private final TaskService taskService;
 
-    private final IdValidator validator;
-
     @Override
     public StateType getStateType() {
         return StateType.WAITING_TASK_TO_DELETE;
@@ -38,8 +36,8 @@ public class WaitingTaskToDeleteState implements UserState {
         try {
             String maybeNumber = botContext.message();
             long chatId = botContext.chatId();
-            validate(maybeNumber, chatId);
-            long taskId = Long.parseLong(maybeNumber);
+            validateAndGetTaskId(maybeNumber, chatId);
+            long taskId = validateAndGetTaskId(maybeNumber,chatId);
             taskService.deleteByTaskIdAndChatId(taskId, chatId);
             log.info("Удаление прошло успешно");
             sendTextCompleteDeleted(botContext);
@@ -57,8 +55,11 @@ public class WaitingTaskToDeleteState implements UserState {
         return false;
     }
 
-    private void validate(String maybeNumber, long chatId) {
-        validator.checkValidated(maybeNumber, chatId);
+    private long validateAndGetTaskId(String maybeNumber, long chatId) {
+        IdValidator.checkValidated(maybeNumber);
+        long taskId = Long.parseLong(maybeNumber);
+        taskService.checkTaskExists(taskId, chatId);
+        return taskId;
     }
 
     private void sendTextCompleteDeleted(BotContext botContext) {

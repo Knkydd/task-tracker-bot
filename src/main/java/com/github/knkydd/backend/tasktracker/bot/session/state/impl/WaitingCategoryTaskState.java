@@ -19,8 +19,6 @@ public class WaitingCategoryTaskState implements UserState {
 
     private final MessageProperty property;
 
-    private final CategoryValidator validator;
-
     @Override
     public StateType getStateType() {
         return StateType.WAITING_CATEGORY_TASK;
@@ -30,7 +28,7 @@ public class WaitingCategoryTaskState implements UserState {
     public boolean handle(BotContext botContext, UserSession session) {
         try {
             String category = botContext.message();
-            validate(category);
+            CategoryValidator.checkValidated(category);
 
             sendTextAddDescriptionText(botContext);
             session.setCategory(category);
@@ -48,10 +46,6 @@ public class WaitingCategoryTaskState implements UserState {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
         }
         return false;
-    }
-
-    private void validate(String category) {
-        validator.checkValidated(category);
     }
 
     private void sendTextErrorCategoryValidate(BotContext botContext) {

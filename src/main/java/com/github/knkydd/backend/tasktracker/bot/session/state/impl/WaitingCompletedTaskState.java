@@ -5,12 +5,12 @@ import com.github.knkydd.backend.tasktracker.bot.exception.NoSuchTaskInRepositor
 import com.github.knkydd.backend.tasktracker.bot.exception.NotANumberException;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
-import com.github.knkydd.backend.tasktracker.bot.validator.IdValidator;
 import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.session.state.UserState;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
+import com.github.knkydd.backend.tasktracker.bot.validator.IdValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,8 +26,6 @@ public class WaitingCompletedTaskState implements UserState {
 
     private final TaskService taskService;
 
-    private final IdValidator validator;
-
     @Override
     public StateType getStateType() {
         return StateType.WAITING_COMPLETED_TASK;
@@ -38,8 +36,7 @@ public class WaitingCompletedTaskState implements UserState {
         try {
             String maybeNumber = botContext.message();
             long chatId = botContext.chatId();
-            validate(maybeNumber, chatId);
-            long taskId = Long.parseLong(maybeNumber);
+            long taskId = validateAndGetTaskId(maybeNumber, chatId);
             taskService.deleteByTaskIdAndChatId(taskId, chatId);
             sendTextCompleteSuccess(botContext);
             log.info("Таска успешно выполнена и удалена");
@@ -56,6 +53,13 @@ public class WaitingCompletedTaskState implements UserState {
         return false;
     }
 
+    private long validateAndGetTaskId(String maybeNumber, long chatId) {
+        IdValidator.checkValidated(maybeNumber);
+        long taskId = Long.parseLong(maybeNumber);
+        taskService.checkTaskExists(taskId, chatId);
+        return taskId;
+    }
+
     private void sendTextCompleteSuccess(BotContext botContext) {
         String text = property.getCompleteTask().getCompleteSuccess();
         botContext.reply(text);
@@ -69,9 +73,5 @@ public class WaitingCompletedTaskState implements UserState {
     private void sendTextErrorWithDelete(BotContext botContext) {
         String text = property.getError().getCompleteErrors().getDbDelete();
         botContext.reply(text);
-    }
-
-    private void validate(String maybeNumber, long chatId) {
-        validator.checkValidated(maybeNumber, chatId);
     }
 }
