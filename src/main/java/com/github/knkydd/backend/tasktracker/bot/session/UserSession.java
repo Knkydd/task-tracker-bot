@@ -1,6 +1,5 @@
 package com.github.knkydd.backend.tasktracker.bot.session;
 
-import com.github.knkydd.backend.tasktracker.bot.model.TaskCategory;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,7 @@ public class UserSession {
 
     private StateType stateType = StateType.IDLE;
 
-    private TaskCategory category;
+    private String category;
 
     public UserSession(long chatId) {
         this.chatId = chatId;
