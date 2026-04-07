@@ -1,11 +1,13 @@
 package com.github.knkydd.backend.tasktracker.bot.service;
 
+import com.github.knkydd.backend.tasktracker.bot.exception.GetOrCreateUserException;
 import com.github.knkydd.backend.tasktracker.bot.model.User;
 import com.github.knkydd.backend.tasktracker.bot.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -16,17 +18,13 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User getOrCreateByChatId(long chatId) {
-        Optional<User> user = userRepository.findById(chatId);
-        if (user.isEmpty()) {
-            return user.get();
-        }
+    @Transactional
+    public User getOrCreateUser(long chatId) {
         try {
-            User newUser = new User();
-            newUser.setChatId(chatId);
-            return userRepository.saveAndFlush(newUser);
-        } catch (DataIntegrityViolationException e) {
-            return userRepository.findById(chatId).orElseThrow(() -> e);
+            Optional<User> user = userRepository.findById(chatId);
+            return user.orElseGet(() -> userRepository.saveAndFlush(new User(chatId)));
+        } catch (DataAccessException e) {
+            throw new GetOrCreateUserException("Возникла ошибка создания или сохранения пользователя. "+ e.getMessage());
         }
     }
 }

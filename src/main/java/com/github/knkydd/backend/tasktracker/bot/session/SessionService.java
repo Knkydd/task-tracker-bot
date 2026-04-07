@@ -15,25 +15,18 @@ public class SessionService {
 
     private final Map<Long, UserSession> sessions = new ConcurrentHashMap<>();
 
-    public UserSession getOrCreate(Long chatId){
+    public UserSession getOrCreate(Long chatId) {
         return sessions.computeIfAbsent(chatId, UserSession::new);
     }
 
-    public void save(UserSession userSession){
+    public void save(UserSession userSession) {
         sessions.put(userSession.getChatId(), userSession);
     }
 
-    public void reset(long chatId){
+    public void reset(long chatId) {
         UserSession session = getOrCreate(chatId);
         session.setStateType(StateType.IDLE);
         session.clearTaskCategory();
         save(session);
-        log.atInfo()
-                .addArgument(chatId)
-                .addKeyValue("session-service", "reset-user-session")
-                .setMessage("Сессия пользователя {} сброшена до начального состояния")
-                .log();
     }
-
-
 }

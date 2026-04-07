@@ -7,6 +7,8 @@ public interface UserState {
 
     StateType getStateType();
 
+    StateType getNextStateType();
+
     boolean handle(BotContext botContext, UserSession session);
 
 }

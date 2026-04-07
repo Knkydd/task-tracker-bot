@@ -1,6 +1,5 @@
 package com.github.knkydd.backend.tasktracker.bot.telegram;
 
-
 import com.github.knkydd.backend.tasktracker.bot.command.CommandHandler;
 import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
@@ -22,21 +21,28 @@ public class UpdateProcessor {
 
     private final StateFactory factory;
 
-    public void process(BotContext botContext){
+    public void process(BotContext botContext) {
         long chatId = botContext.chatId();
         UserSession session = sessionService.getOrCreate(chatId);
 
-        if(session.getStateType() != StateType.IDLE){
+        if (session.getStateType() != StateType.IDLE) {
             UserState state = factory.getUserState(session.getStateType());
 
             boolean accepted = state.handle(botContext, session);
-            sessionService.save(session);
 
-            if(accepted){
-                return;
+            if (!accepted) {
+                sessionService.reset(chatId);
             }
+            if (state.getNextStateType().equals(StateType.IDLE)) {
+                sessionService.reset(chatId);
+            } else {
+                session.setStateType(state.getNextStateType());
+                sessionService.save(session);
+            }
+
+            return;
         }
 
-        commandHandler.execute(botContext);
+        commandHandler.execute(botContext, session);
     }
 }
