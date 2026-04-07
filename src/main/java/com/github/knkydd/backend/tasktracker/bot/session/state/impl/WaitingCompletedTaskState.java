@@ -5,7 +5,6 @@ import com.github.knkydd.backend.tasktracker.bot.exception.NoSuchTaskInRepositor
 import com.github.knkydd.backend.tasktracker.bot.exception.NotANumberException;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
-import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.session.state.UserState;
@@ -22,8 +21,6 @@ public class WaitingCompletedTaskState implements UserState {
 
     private final MessageProperty property;
 
-    private final SessionService service;
-
     private final TaskService taskService;
 
     @Override
@@ -32,32 +29,47 @@ public class WaitingCompletedTaskState implements UserState {
     }
 
     @Override
+    public StateType getNextStateType() {
+        return StateType.IDLE;
+    }
+
+    @Override
     public boolean handle(BotContext botContext, UserSession session) {
+        return checkIdCorrect(botContext) && deleteTask(botContext);
+    }
+
+    private boolean checkIdCorrect(BotContext botContext) {
         try {
             String maybeNumber = botContext.message();
+            IdValidator.checkValidated(maybeNumber);
+            long taskId = Long.parseLong(maybeNumber);
             long chatId = botContext.chatId();
-            long taskId = validateAndGetTaskId(maybeNumber, chatId);
-            taskService.deleteByTaskIdAndChatId(taskId, chatId);
-            sendTextCompleteSuccess(botContext);
-            log.info("Таска успешно выполнена и удалена");
-            service.reset(chatId);
+            taskService.checkTaskExists(taskId, chatId);
             return true;
-        } catch (NotANumberException | NoSuchTaskInRepositoryException e) {
-            sendTextErrorIdValidate(botContext);
-        } catch (DeleteTaskException e) {
-            sendTextErrorWithDelete(botContext);
+        } catch (NotANumberException e) {
             log.error(e.getMessage());
+            sendTextErrorNotANumber(botContext);
+        } catch (NoSuchTaskInRepositoryException e) {
+            log.error(e.getMessage());
+            sendTextErrorTaskNotExists(botContext);
         } catch (Exception e) {
-            log.error("Возникла неизвестная ошибка! {}", e.getMessage());
+            log.error("Возникла неизвестная ошибка во время проверки валидации номера задачи. {}", e.getMessage());
         }
         return false;
     }
 
-    private long validateAndGetTaskId(String maybeNumber, long chatId) {
-        IdValidator.checkValidated(maybeNumber);
-        long taskId = Long.parseLong(maybeNumber);
-        taskService.checkTaskExists(taskId, chatId);
-        return taskId;
+    private boolean deleteTask(BotContext botContext) {
+        try {
+            long chatId = botContext.chatId();
+            long taskId = Long.parseLong(botContext.message());
+            taskService.deleteTask(taskId, chatId);
+            sendTextCompleteSuccess(botContext);
+            return true;
+        } catch (DeleteTaskException e) {
+            log.error(e.getMessage());
+            sendTextErrorWithDelete(botContext);
+        }
+        return false;
     }
 
     private void sendTextCompleteSuccess(BotContext botContext) {
@@ -65,13 +77,18 @@ public class WaitingCompletedTaskState implements UserState {
         botContext.reply(text);
     }
 
-    private void sendTextErrorIdValidate(BotContext botContext) {
-        String text = property.getError().getCompleteErrors().getIdValidate();
+    private void sendTextErrorNotANumber(BotContext botContext) {
+        String text = property.getErrors().getIdValidateErrors().getNotANumber();
+        botContext.reply(text);
+    }
+
+    private void sendTextErrorTaskNotExists(BotContext botContext) {
+        String text = property.getErrors().getIdValidateErrors().getTaskNotExists();
         botContext.reply(text);
     }
 
     private void sendTextErrorWithDelete(BotContext botContext) {
-        String text = property.getError().getCompleteErrors().getDbDelete();
+        String text = property.getErrors().getCompleteErrors().getDbDelete();
         botContext.reply(text);
     }
 }

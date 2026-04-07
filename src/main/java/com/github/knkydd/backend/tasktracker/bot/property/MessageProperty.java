@@ -25,6 +25,9 @@ public class MessageProperty {
     private String view;
 
     @NotNull
+    private String viewTemplate;
+
+    @NotNull
     private AddTask addTask;
 
     @Getter
@@ -70,7 +73,7 @@ public class MessageProperty {
     }
 
     @NotNull
-    private Errors error;
+    private Errors errors;
 
     @Getter
     @Setter
@@ -81,10 +84,16 @@ public class MessageProperty {
         private AddErrors addErrors;
 
         @NotNull
+        private ViewErrors viewErrors;
+
+        @NotNull
         private CompleteErrors completeErrors;
 
         @NotNull
         private DeleteErrors deleteErrors;
+
+        @NotNull
+        private IdValidateErrors idValidateErrors;
 
         @NotNull
         private String unknownError;
@@ -113,10 +122,14 @@ public class MessageProperty {
         @Getter
         @Setter
         @Valid
-        public static class CompleteErrors {
+        public static class ViewErrors {
+            private String gettingTasks;
+        }
 
-            @NotNull
-            private String idValidate;
+        @Getter
+        @Setter
+        @Valid
+        public static class CompleteErrors {
 
             @NotNull
             private String dbDelete;
@@ -126,13 +139,24 @@ public class MessageProperty {
         @Setter
         @Valid
         public static class DeleteErrors {
-            @NotNull
-            private String idValidate;
 
             @NotNull
             private String dbDelete;
         }
+
+        @Getter
+        @Setter
+        @Valid
+        public static class IdValidateErrors {
+
+            @NotNull
+            private String notANumber;
+
+            @NotNull
+            private String taskNotExists;
+        }
     }
+
     @NotNull
     private String unknown;
 }

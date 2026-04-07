@@ -19,7 +19,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User getOrCreateByChatId(long chatId) {
+    public User getOrCreateUser(long chatId) {
         try {
             Optional<User> user = userRepository.findById(chatId);
             return user.orElseGet(() -> userRepository.saveAndFlush(new User(chatId)));

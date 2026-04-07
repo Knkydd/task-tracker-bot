@@ -1,7 +1,6 @@
 package com.github.knkydd.backend.tasktracker.bot.command;
 
 import com.github.knkydd.backend.tasktracker.bot.command.impl.UnknownCommand;
-import com.github.knkydd.backend.tasktracker.bot.session.SessionService;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
 import lombok.AllArgsConstructor;
@@ -18,8 +17,6 @@ public class CommandHandler {
     private final Map<String, Command> commands;
 
     private final UnknownCommand unknownCommand;
-
-    private final SessionService service;
 
     public void execute(BotContext botContext, UserSession session) {
         String message = botContext.message().split(" ")[0];

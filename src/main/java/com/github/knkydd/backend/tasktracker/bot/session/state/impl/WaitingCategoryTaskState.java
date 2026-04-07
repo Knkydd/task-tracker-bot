@@ -1,6 +1,5 @@
 package com.github.knkydd.backend.tasktracker.bot.session.state.impl;
 
-import com.github.knkydd.backend.tasktracker.bot.exception.GetOrCreateCategoryException;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
@@ -25,6 +24,11 @@ public class WaitingCategoryTaskState implements UserState {
     }
 
     @Override
+    public StateType getNextStateType() {
+        return StateType.WAITING_DESCRIPTION_TASK;
+    }
+
+    @Override
     public boolean handle(BotContext botContext, UserSession session) {
         try {
             String category = botContext.message();
@@ -32,16 +36,12 @@ public class WaitingCategoryTaskState implements UserState {
 
             sendTextAddDescriptionText(botContext);
             session.setCategory(category);
-            session.setStateType(StateType.WAITING_DESCRIPTION_TASK);
 
             return true;
 
         } catch (IllegalArgumentException e) {
             log.warn("Возникла ошибка валидации. {}", e.getMessage());
             sendTextErrorCategoryValidate(botContext);
-        } catch (GetOrCreateCategoryException e) {
-            log.error(e.getMessage());
-            sendTextErrorCategorySave(botContext);
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
         }
@@ -49,14 +49,8 @@ public class WaitingCategoryTaskState implements UserState {
     }
 
     private void sendTextErrorCategoryValidate(BotContext botContext) {
-        String text = property.getError().getAddErrors().getCategoryValidate();
+        String text = property.getErrors().getAddErrors().getCategoryValidate();
         botContext.reply(text);
-    }
-
-    private void sendTextErrorCategorySave(BotContext botContext) {
-        String text = property.getError().getAddErrors().getCategorySave();
-        botContext.reply(text);
-
     }
 
     private void sendTextAddDescriptionText(BotContext botContext) {

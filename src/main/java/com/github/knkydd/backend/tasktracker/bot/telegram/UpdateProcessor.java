@@ -29,11 +29,17 @@ public class UpdateProcessor {
             UserState state = factory.getUserState(session.getStateType());
 
             boolean accepted = state.handle(botContext, session);
-            sessionService.save(session);
 
-            if(!accepted){
+            if (!accepted) {
                 sessionService.reset(chatId);
             }
+            if (state.getNextStateType().equals(StateType.IDLE)) {
+                sessionService.reset(chatId);
+            } else {
+                session.setStateType(state.getNextStateType());
+                sessionService.save(session);
+            }
+
             return;
         }
 

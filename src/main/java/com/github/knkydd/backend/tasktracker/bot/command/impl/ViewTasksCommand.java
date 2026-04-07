@@ -1,7 +1,7 @@
 package com.github.knkydd.backend.tasktracker.bot.command.impl;
 
 import com.github.knkydd.backend.tasktracker.bot.command.Command;
-import com.github.knkydd.backend.tasktracker.bot.exception.NoSuchTaskInRepositoryException;
+import com.github.knkydd.backend.tasktracker.bot.exception.GetTaskListException;
 import com.github.knkydd.backend.tasktracker.bot.model.Task;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.service.TaskService;
@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service("/view")
@@ -25,30 +24,39 @@ public class ViewTasksCommand implements Command {
 
     @Override
     public void handle(BotContext botContext) {
-        long chatId = botContext.chatId();
-        List<Task> tasks = getTasksByChatId(chatId);
-        String text = description() + "\n" + createTextWithTasks(tasks);
-        botContext.reply(text);
+        try {
+            long chatId = botContext.chatId();
+            String text = getTextWithTasksToReply(chatId);
+            botContext.reply(text);
+        } catch (GetTaskListException e) {
+            log.error(e.getMessage());
+            sendTextErrorGettingTasks(botContext);
+        }
     }
 
-    private List<Task> getTasksByChatId(long chatId) {
-        try{
-            return taskService.findAllByChatId(chatId);
-        } catch (NoSuchTaskInRepositoryException e){
-            log.error(e.getMessage());
-            return Collections.<Task>emptyList();
-        }
+    private String getTextWithTasksToReply(long chatId) {
+        List<Task> tasks = getTasks(chatId);
+        return description() + "\n" + createTextWithTasks(tasks);
+    }
+
+    private List<Task> getTasks(long chatId) {
+        return taskService.getUserTasks(chatId);
     }
 
     private String createTextWithTasks(List<Task> tasks) {
         StringBuilder stringBuilder = new StringBuilder();
+        String template = property.getViewTemplate();
         for (Task task : tasks) {
-            stringBuilder.append("Id задачи: ").append(task.getTaskId()).append("\n");
-            stringBuilder.append("Категория задачи: ").append(task.getCategory().getName()).append("\n");
-            stringBuilder.append("Описание задачи: ").append(task.getDescription()).append("\n");
-            stringBuilder.append("\n");
+            stringBuilder.append(
+                    String.format(template, task.getTaskId(), task.getCategory().getName(), task.getDescription())
+            );
         }
         return stringBuilder.toString();
+    }
+
+    private void sendTextErrorGettingTasks(BotContext botContext) {
+        String text = property.getErrors().getViewErrors().getGettingTasks();
+        botContext.reply(text);
     }
 
     @Override
