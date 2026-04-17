@@ -1,0 +1,64 @@
+databaseChangelog:
+  -changeSet:
+    id: create-user-table
+    author: Alexander_Pesterev
+    changes:
+      - createTable:
+          tableName: users
+          columns:
+            - column:
+                name: chatId
+                type: bigint
+                constraints:
+                  primary-key: true
+                  nullable: false
+      - createTable:
+          tableName: categories
+          columns:
+            - column:
+                name: categoryId
+                type: bigint
+                constraints:
+                  primary-key: true
+                  nullable: false
+            - column:
+                name: name
+                type: varchar(100)
+                constraints:
+                  nullable: false
+      - createTable:
+          tableName: tasks
+          columns:
+            - column:
+                name: taskId
+                type: bigint
+                constraints:
+                  primary-key: true
+                  nullable: false
+            - column:
+                name: chatId
+                type: bigint
+                constraints:
+                  nullable: false
+            - column:
+                name: categoryId
+                type: bigint
+                constraints:
+                  nullable: false
+            - column:
+                name: description
+                type: varchar(255)
+      - addForeignKeyConstraint:
+          baseTableName: tasks
+          baseColumnNames: chatId
+          referencedTableName: users
+          referencedColumnNames: chatId
+          constraintName: fk_tasks_users
+          onDelete: CASCADE
+      - addForeignKeyConstraint:
+          baseTableName: tasks
+          baseColumnNames: categoryId
+          referencedTableName: categories
+          referencedColumnNames: categoryId
+          constraintName: fk_tasks_categories
+          onDelete: CASCADE
