@@ -1,0 +1,9 @@
+type: object
+required: [code, message]
+properties:
+  code:
+    type: string
+    default: 'INTERNAL_SERVER_ERROR'
+  message:
+    type: string
+    default: 'Возникла ошибка сервера'

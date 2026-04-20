@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: Test OpenAPI yml
+  description: |
+    **OpenAPI** для core сервиса телеграм бота
+    
+    Включает в себя:
+    - Описание эндпоинтов для сервиса
+
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:4010
+
+tags:
+  - name: Задачи
+    description: Управление задачами
+
+paths:
+  /tasks/{chatId}:
+    $ref: './paths/tasks.chatId.yml'
+  /tasks/{chatId}/{taskId}:
+    $ref: './paths/tasks.chatId.taskId.yml'

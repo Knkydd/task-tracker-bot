@@ -1,0 +1,9 @@
+type: object
+required: [taskId, category, description]
+properties:
+  taskId:
+    type: int64
+  category:
+    type: string
+  description:
+    type: string
