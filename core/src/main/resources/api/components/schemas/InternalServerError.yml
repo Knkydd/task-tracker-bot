@@ -2,8 +2,8 @@ type: object
 required: [code, message]
 properties:
   code:
-    type: string
-    default: 'INTERNAL_SERVER_ERROR'
+    type: integer
+    default: 500
   message:
     type: string
-    default: 'Возникла ошибка сервера'
+    example: 'Возникла ошибка сервера'
