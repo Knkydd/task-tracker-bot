@@ -1,18 +1,10 @@
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:55432/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-    hikari:
-      schema: task_tracker_bot_schema
-      connection-init-sql: CREATE SCHEMA IF NOT EXISTS task_tracker_bot_schema
-  jpa:
-    hibernate:
-      ddl-auto: update
-    generate-ddl: true
-    show-sql: false
+server:
+  port:
+    8081
 
 app:
+  core:
+    baseUri: "http://localhost:8082"
   properties:
     uri: "https://api.telegram.org/bot"
     token: "${TELEGRAM_BOT_TOKEN}"
@@ -45,7 +37,6 @@ app:
         category-validate: "Нельзя ввести категорию, начинающуюся на '/'. Введите /help чтобы узнать все команды бота"
         category-save: "Не удалось сохранить категорию. Введите /help чтобы узнать все команды бота"
         description-validate: "Нельзя ввести описание задачи, которая начинается на '/'. Введите /help чтобы узнать все команды бота"
-        description-save-user: "Возникла ошибка регистрации пользователя в системе. Введите /help чтобы узнать все команды бота"
         description-save-task: "Возникла ошибка сохранения задачи в систему. Введите /help чтобы узнать все команды бота"
       view-errors:
         getting-tasks: "Возникла ошибка получения списка задач. Введите /help чтобы узнать все команды бота"

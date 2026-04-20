@@ -1,0 +1,20 @@
+server:
+  port: 8082
+
+spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/master.yml
+    default-schema: task_tracker_bot_schema
+
+  datasource:
+    url: jdbc:postgresql://localhost:55432/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      schema: task_tracker_bot_schema
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS task_tracker_bot_schema
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
