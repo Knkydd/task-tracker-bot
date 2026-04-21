@@ -7,14 +7,21 @@ import lombok.experimental.UtilityClass;
 public class IdValidator {
 
     public static void checkValidated(String maybeNumber) {
-        checkNumber(maybeNumber);
+        checkOnNumber(maybeNumber);
+        checkOnNull(maybeNumber);
     }
 
-    private static void checkNumber(String maybeNumber) {
+    private static void checkOnNumber(String maybeNumber) {
         try {
             Long.parseLong(maybeNumber);
         } catch (NumberFormatException e) {
             throw new NotANumberException("Переданная строка не является числом. " + e.getMessage());
+        }
+    }
+
+    private static void checkOnNull(String maybeNumber){
+        if(maybeNumber == null){
+            throw new NotANumberException("Переданная строка является null");
         }
     }
 }

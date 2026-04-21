@@ -27,6 +27,8 @@ public class TaskGateway {
             if (e.getStatusCode().value() == 500) {
                 throw new TaskGetException(e.getMessage());
             }
+        } catch (Exception e){
+            throw new RuntimeException("Возникла неизвестная ошибка. " + e.getMessage());
         }
         return Collections.emptyList();
     }
@@ -38,6 +40,8 @@ public class TaskGateway {
             if (e.getStatusCode().value() == 500) {
                 throw new TaskSaveException(e.getMessage());
             }
+        } catch (Exception e){
+            throw new RuntimeException("Возникла неизвестная ошибка. " + e.getMessage());
         }
     }
 
@@ -50,6 +54,8 @@ public class TaskGateway {
             } else if (e.getStatusCode().value() == 404) {
                 throw new TaskNotFoundException(e.getMessage());
             }
+        } catch (Exception e){
+            throw new RuntimeException("Возникла неизвестная ошибка. " + e.getMessage());
         }
     }
 }
