@@ -1,0 +1,46 @@
+get:
+  summary: Получить список задач
+  tags: [Задачи]
+  security: []
+  parameters:
+    - name: chatId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: 'Список задач'
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/TaskList.yml'
+    '500':
+      $ref: '../components/responses/InternalServerError.yml'
+
+post:
+  summary: Отправить задачу для сохранения
+  tags: [Задачи]
+  parameters:
+    - name: chatId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/TaskCreate.yml'
+        example:
+          category: 'Домашние дела'
+          description: 'Пропылесосить дом'
+
+  responses:
+    '201':
+      description: Сохранение задачи успешно
+    '500':
+      $ref: '../components/responses/InternalServerError.yml'

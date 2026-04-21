@@ -1,0 +1,9 @@
+type: object
+required: [code, message]
+properties:
+  code:
+    type: integer
+    default: 500
+  message:
+    type: string
+    example: 'Возникла ошибка сервера'

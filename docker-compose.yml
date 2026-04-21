@@ -6,4 +6,4 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
-      - "55432:5432"
+      - "5432:5432"

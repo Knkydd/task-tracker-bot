@@ -1,0 +1,5 @@
+description: Ошибка получения задач
+content:
+  application/json:
+    schema:
+      $ref: '../schemas/NotFoundError.yml'
