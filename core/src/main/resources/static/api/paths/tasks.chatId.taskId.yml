@@ -5,6 +5,6 @@ delete:
     '204':
       description: Задача удалена
     '404':
-      $ref: './components/responses/NotFoundError.yml'
+      $ref: '../components/responses/NotFoundError.yml'
     '500':
-      $ref: './components/responses/InternalServerError.yml'
+      $ref: '../components/responses/InternalServerError.yml'

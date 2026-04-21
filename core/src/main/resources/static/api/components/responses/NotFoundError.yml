@@ -3,4 +3,3 @@ content:
   application/json:
     schema:
       $ref: '../schemas/NotFoundError.yml'
-    example:

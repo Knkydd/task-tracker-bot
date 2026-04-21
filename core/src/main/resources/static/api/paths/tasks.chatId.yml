@@ -13,9 +13,9 @@ get:
       content:
         application/json:
           schema:
-            $ref: './components/schemas/TaskList.yml'
+            $ref: '../components/schemas/TaskList.yml'
     '500':
-      $ref: './components/responses/InternalServerError.yml'
+      $ref: '../components/responses/InternalServerError.yml'
 
 post:
   summary: Отправить задачу для сохранения
@@ -25,9 +25,8 @@ post:
     content:
       application/json:
         schema:
-          $ref: './components/schemas/TaskCreate.yml'
+          $ref: '../components/schemas/TaskCreate.yml'
         example:
-          chatId: 452374682
           category: 'Домашние дела'
           description: 'Пропылесосить дом'
 
@@ -35,5 +34,5 @@ post:
     '201':
       description: Сохранение задачи успешно
     '500':
-      $ref: './components/responses/InternalServerError.yml'
+      $ref: '../components/responses/InternalServerError.yml'
 

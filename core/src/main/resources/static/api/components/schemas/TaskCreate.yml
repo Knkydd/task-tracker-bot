@@ -1,8 +1,6 @@
 type: object
-required: [chatId, category, description]
+required: [category, description]
 properties:
-  chatId:
-    type: int64
   category:
     type: string
   description:
