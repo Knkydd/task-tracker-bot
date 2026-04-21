@@ -22,9 +22,15 @@ public class TaskCategoryService {
     public TaskCategory getOrCreateCategory(TaskCategory category) {
         try {
             String name = category.getName();
+            log.info("Попытка получить категорию {} ...", name);
             Optional<TaskCategory> taskCategory = taskCategoryRepository.findByName(name);
-            return taskCategory.orElseGet(() -> taskCategoryRepository.saveAndFlush(new TaskCategory(name)));
-
+            if (taskCategory.isPresent()) {
+                log.info("Категория {} найдена.", name);
+                return taskCategory.get();
+            } else {
+                log.info("Категория {} не найдена. Попытка сохранения...", name);
+                return taskCategoryRepository.saveAndFlush(category);
+            }
         } catch (DataAccessException e) {
             throw new ServerException("Возникла ошибка создания или сохранения категории" + e.getMessage());
         }

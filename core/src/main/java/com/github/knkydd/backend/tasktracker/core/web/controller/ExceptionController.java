@@ -17,7 +17,7 @@ public class ExceptionController {
             Exception.class
     })
     public ResponseEntity<ExceptionControllerResponse> handleServerException(Exception e) {
-        log.error(e.getMessage());
+        log.error("{}. {}", e.getClass(), e.getMessage());
         var response = new ExceptionControllerResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()
         );
@@ -26,7 +26,7 @@ public class ExceptionController {
 
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<ExceptionControllerResponse> handleTaskNotFound(TaskNotFoundException e) {
-        log.error(e.getMessage());
+        log.error("{}. {}", e.getClass(), e.getMessage());
         var response = new ExceptionControllerResponse(
                 HttpStatus.NOT_FOUND.value(), e.getMessage()
         );

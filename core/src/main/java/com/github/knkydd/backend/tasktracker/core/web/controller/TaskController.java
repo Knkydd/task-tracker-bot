@@ -21,7 +21,7 @@ public class TaskController {
 
     @GetMapping("/{chatId}")
     public ResponseEntity<List<TaskResponseDto>> getTasks(@PathVariable long chatId) {
-        log.info("Пришел GET запрос на /tasks/{chatId}");
+        log.info("Пришел GET запрос на /tasks/{}", chatId);
         List<TaskResponseDto> tasks = taskService.getUserTasks(chatId).stream()
                 .map(task -> new TaskResponseDto(
                         task.getTaskId(),
@@ -29,25 +29,25 @@ public class TaskController {
                         task.getDescription()
                 ))
                 .toList();
-        log.info("Запрос успешно обработан. Отправка ответа...");
+        log.info("GET Запрос /tasks/{} успешно обработан. Отправка ответа...", chatId);
         return ResponseEntity.status(HttpStatus.OK).body(tasks);
     }
 
     @PostMapping("/{chatId}")
     public ResponseEntity<?> saveTask(@PathVariable long chatId,
                                       @RequestBody TaskRequestDto task) {
-        log.info("Пришел POST запрос на /tasks/{chatId}");
+        log.info("Пришел POST запрос на /tasks/{}. Тело запроса: {}", chatId, task);
         taskService.saveTask(chatId, task);
-        log.info("Запрос успешно обработан. Отправка ответа...");
+        log.info("POST Запрос /tasks/{} успешно обработан. Отправка ответа...", chatId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{chatId}/{taskId}")
     public ResponseEntity<?> deleteTask(@PathVariable long chatId,
                                         @PathVariable long taskId) {
-        log.info("Пришел DELETE запрос на /tasks/{chatId}/{taskId}");
+        log.info("Пришел DELETE запрос на /tasks/{}/{}", chatId, taskId);
         taskService.deleteTask(taskId, chatId);
-        log.info("Запрос успешно обработан. Отправка ответа...");
+        log.info("DELETE Запрос /tasks/{}/{} успешно обработан. Отправка ответа...",  chatId, taskId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -21,6 +21,7 @@ public class UserService {
     @Transactional
     public User getOrCreateUser(long chatId) {
         try {
+            log.info("Попытка получить пользователя {} ...", chatId);
             Optional<User> user = userRepository.findById(chatId);
             return user.orElseGet(() -> userRepository.saveAndFlush(new User(chatId)));
         } catch (DataAccessException e) {

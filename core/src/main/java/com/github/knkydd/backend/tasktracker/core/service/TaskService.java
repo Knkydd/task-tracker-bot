@@ -30,22 +30,22 @@ public class TaskService {
     @Transactional
     public void deleteTask(long taskId, long chatId) {
         try {
-            log.info("Проверка существования задачи");
+            log.info("Проверка существования задачи с номером {} пользователя {}", taskId, chatId);
             checkTaskExists(taskId, chatId);
-            log.info("Попытка удаления задачи...");
+            log.info("Попытка удаления задачи задачи с номером {} пользователя {} ...", taskId, chatId);
             taskRepository.deleteByTaskIdAndUserChatId(taskId, chatId);
-            log.info("Удаление успешно");
+            log.info("Удаление задачи с номером {} пользователя {} успешно", taskId, chatId);
         } catch (DataAccessException e) {
-            throw new ServerException("Возникла ошибка удаления задачи: " + e.getMessage());
+            throw new ServerException(
+                    String.format("Возникла ошибка удаления задачи с номером %s пользователя %s.", taskId, chatId)
+                            + e.getMessage());
         }
     }
 
     @Transactional
     public void saveTask(long chatId, TaskRequestDto task) {
         try {
-            log.info("Попытка сохранения пользователя");
             User user = userService.getOrCreateUser(chatId);
-            log.info("Попытка сохранения категории");
             TaskCategory category = taskCategoryService.getOrCreateCategory(new TaskCategory(task.category()));
             Task newTask = new Task(user, category, task.description());
             log.info("Попытка сохранения задачи");
@@ -59,13 +59,13 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<Task> getUserTasks(long chatId) {
         try {
-            log.info("Попытка получить задачи пользователя");
+            log.info("Попытка получить задачи пользователя {}", chatId);
             List<Task> tasks = taskRepository.findAllByUserChatId(chatId);
             if (tasks == null || tasks.isEmpty()) {
-                log.info("Задач не обнаружено");
+                log.info("Задач у пользователя {} не обнаружено", chatId);
                 return Collections.<Task>emptyList();
             }
-            log.info("Задачи были найдены");
+            log.info("Задачи пользователя {} были найдены", chatId);
             return tasks;
         } catch (DataAccessException e) {
             throw new ServerException("Возникла ошибка получения списка задач пользователя " + chatId);
