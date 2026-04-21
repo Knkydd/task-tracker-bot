@@ -48,6 +48,7 @@ public class WaitingCompletedTaskState implements UserState {
             sendTextErrorNotANumber(botContext);
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка во время проверки валидации номера задачи. {}", e.getMessage());
+            sendTextUnknownError(botContext);
         }
         return false;
     }
@@ -56,7 +57,7 @@ public class WaitingCompletedTaskState implements UserState {
         try {
             long chatId = botContext.chatId();
             long taskId = Long.parseLong(botContext.message());
-            gateway.deleteTask(taskId, chatId);
+            gateway.deleteTask(chatId, taskId);
             sendTextCompleteSuccess(botContext);
             return true;
         } catch (TaskDeleteException e) {
@@ -65,6 +66,9 @@ public class WaitingCompletedTaskState implements UserState {
         } catch (TaskNotFoundException e) {
             log.error(e.getMessage());
             sendTextErrorTaskNotExists(botContext);
+        } catch (Exception e) {
+            log.error("Возникла неизвестная ошибка во время удаления задачи. {}", e.getMessage());
+            sendTextUnknownError(botContext);
         }
         return false;
     }
@@ -86,6 +90,11 @@ public class WaitingCompletedTaskState implements UserState {
 
     private void sendTextErrorWithDelete(BotContext botContext) {
         String text = property.getErrors().getCompleteErrors().getDbDelete();
+        botContext.reply(text);
+    }
+
+    private void sendTextUnknownError(BotContext botContext) {
+        String text = property.getErrors().getUnknownError();
         botContext.reply(text);
     }
 }

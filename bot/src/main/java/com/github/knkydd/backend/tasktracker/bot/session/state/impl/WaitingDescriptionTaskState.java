@@ -47,6 +47,7 @@ public class WaitingDescriptionTaskState implements UserState {
             sendTextErrorDescriptionValidate(botContext);
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка во время валидации. {}", e.getMessage());
+            sendTextUnknownError(botContext);
         }
         return false;
     }
@@ -64,6 +65,9 @@ public class WaitingDescriptionTaskState implements UserState {
         } catch (TaskSaveException e) {
             log.error(e.getMessage());
             sendTextErrorDescriptionSaveTask(botContext);
+        } catch (Exception e) {
+            log.error("Возникла неизвестная ошибка во время сохранения задачи. {}", e.getMessage());
+            sendTextUnknownError(botContext);
         }
         return false;
     }
@@ -80,6 +84,11 @@ public class WaitingDescriptionTaskState implements UserState {
 
     private void sendTextCompleteAdd(BotContext botContext) {
         String text = property.getAddTask().getCompleteAdd();
+        botContext.reply(text);
+    }
+
+    private void sendTextUnknownError(BotContext botContext) {
+        String text = property.getErrors().getUnknownError();
         botContext.reply(text);
     }
 }

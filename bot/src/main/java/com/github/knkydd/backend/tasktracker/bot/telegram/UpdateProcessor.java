@@ -32,8 +32,7 @@ public class UpdateProcessor {
 
             if (!accepted) {
                 sessionService.reset(chatId);
-            }
-            if (state.getNextStateType().equals(StateType.IDLE)) {
+            } else if (state.getNextStateType().equals(StateType.IDLE)) {
                 sessionService.reset(chatId);
             } else {
                 session.setStateType(state.getNextStateType());

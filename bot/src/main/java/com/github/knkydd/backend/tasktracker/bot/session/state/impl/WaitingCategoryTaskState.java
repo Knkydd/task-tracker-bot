@@ -44,6 +44,7 @@ public class WaitingCategoryTaskState implements UserState {
             sendTextErrorCategoryValidate(botContext);
         } catch (Exception e) {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
+            sendTextUnknownError(botContext);
         }
         return false;
     }
@@ -55,6 +56,11 @@ public class WaitingCategoryTaskState implements UserState {
 
     private void sendTextAddDescriptionText(BotContext botContext) {
         String text = property.getAddTask().getAddDescription();
+        botContext.reply(text);
+    }
+
+    private void sendTextUnknownError(BotContext botContext) {
+        String text = property.getErrors().getUnknownError();
         botContext.reply(text);
     }
 }
