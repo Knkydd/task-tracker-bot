@@ -4,9 +4,11 @@ get:
   security: []
   parameters:
     - name: chatId
-      in: query
+      in: path
+      required: true
       schema:
-        type: int64
+        type: integer
+        format: int64
   responses:
     '200':
       description: 'Список задач'
@@ -20,6 +22,13 @@ get:
 post:
   summary: Отправить задачу для сохранения
   tags: [Задачи]
+  parameters:
+    - name: chatId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
   requestBody:
     required: true
     content:
@@ -35,4 +44,3 @@ post:
       description: Сохранение задачи успешно
     '500':
       $ref: '../components/responses/InternalServerError.yml'
-

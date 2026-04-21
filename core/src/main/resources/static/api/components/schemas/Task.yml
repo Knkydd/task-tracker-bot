@@ -2,7 +2,8 @@ type: object
 required: [taskId, category, description]
 properties:
   taskId:
-    type: int64
+    type: integer
+    format: int64
   category:
     type: string
   description:
