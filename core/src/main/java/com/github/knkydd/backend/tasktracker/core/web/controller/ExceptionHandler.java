@@ -5,14 +5,13 @@ import com.github.knkydd.backend.tasktracker.core.web.responses.ExceptionControl
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
-public class ExceptionController {
+public class ExceptionHandler {
 
-    @ExceptionHandler({
+    @org.springframework.web.bind.annotation.ExceptionHandler({
             ServerException.class,
             Exception.class
     })
@@ -24,7 +23,7 @@ public class ExceptionController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-    @ExceptionHandler(TaskNotFoundException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<ExceptionControllerResponse> handleTaskNotFound(TaskNotFoundException e) {
         log.error("{}. {}", e.getClass(), e.getMessage());
         var response = new ExceptionControllerResponse(

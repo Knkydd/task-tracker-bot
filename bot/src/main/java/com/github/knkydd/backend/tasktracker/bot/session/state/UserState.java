@@ -9,6 +9,6 @@ public interface UserState {
 
     StateType getNextStateType();
 
-    boolean handle(BotContext botContext, UserSession session);
+    void handle(BotContext botContext, UserSession session);
 
 }

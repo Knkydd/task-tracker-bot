@@ -1,4 +1,4 @@
-package com.github.knkydd.backend.tasktracker.bot.validator;
+package com.github.knkydd.backend.tasktracker.bot.utility.validator;
 
 import com.github.knkydd.backend.tasktracker.bot.exception.NotANumberException;
 import lombok.experimental.UtilityClass;

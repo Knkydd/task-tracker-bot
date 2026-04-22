@@ -5,6 +5,7 @@ import com.github.knkydd.backend.tasktracker.bot.exception.TaskGetException;
 import com.github.knkydd.backend.tasktracker.bot.property.MessageProperty;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
+import com.github.knkydd.backend.tasktracker.bot.utility.text.TextGenerator;
 import com.github.knkydd.backend.tasktracker.bot.web.http.TaskGateway;
 import com.github.knkydd.backend.tasktracker.bot.web.responses.TaskResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,8 @@ public class ViewTasksCommand implements Command {
     @Override
     public void handle(BotContext botContext) {
         try {
-            String text = getTextWithTasksToReply(botContext.chatId());
+            List<TaskResponseDto> tasks = gateway.getTasks(botContext.chatId());
+            String text = getTextWithTasksToReply(tasks);
             botContext.reply(text);
         } catch (TaskGetException e) {
             log.error(e.getMessage());
@@ -33,20 +35,13 @@ public class ViewTasksCommand implements Command {
         }
     }
 
-    private String getTextWithTasksToReply(long chatId) {
-        List<TaskResponseDto> tasks = gateway.getTasks(chatId);
+    private String getTextWithTasksToReply(List<TaskResponseDto> tasks) {
         return description() + "\n" + createTextWithTasks(tasks);
     }
 
     private String createTextWithTasks(List<TaskResponseDto> tasks) {
-        StringBuilder stringBuilder = new StringBuilder();
         String template = property.getViewTemplate();
-        for (TaskResponseDto task : tasks) {
-            stringBuilder.append(
-                    String.format(template, task.taskId(), task.category(), task.description())
-            );
-        }
-        return stringBuilder.toString();
+        return TextGenerator.generateForViewCommand(template, tasks);
     }
 
     private void sendTextErrorGettingTasks(BotContext botContext) {

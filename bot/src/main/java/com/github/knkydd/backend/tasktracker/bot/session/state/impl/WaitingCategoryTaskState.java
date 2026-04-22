@@ -5,7 +5,7 @@ import com.github.knkydd.backend.tasktracker.bot.session.UserSession;
 import com.github.knkydd.backend.tasktracker.bot.session.state.StateType;
 import com.github.knkydd.backend.tasktracker.bot.session.state.UserState;
 import com.github.knkydd.backend.tasktracker.bot.telegram.BotContext;
-import com.github.knkydd.backend.tasktracker.bot.validator.CategoryValidator;
+import com.github.knkydd.backend.tasktracker.bot.utility.validator.CategoryValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,16 +29,12 @@ public class WaitingCategoryTaskState implements UserState {
     }
 
     @Override
-    public boolean handle(BotContext botContext, UserSession session) {
+    public void handle(BotContext botContext, UserSession session) {
         try {
             String category = botContext.message();
             CategoryValidator.checkValidated(category);
-
             sendTextAddDescriptionText(botContext);
             session.setCategory(category);
-
-            return true;
-
         } catch (IllegalArgumentException e) {
             log.warn("Возникла ошибка валидации. {}", e.getMessage());
             sendTextErrorCategoryValidate(botContext);
@@ -46,7 +42,6 @@ public class WaitingCategoryTaskState implements UserState {
             log.error("Возникла неизвестная ошибка! {}", e.getMessage());
             sendTextUnknownError(botContext);
         }
-        return false;
     }
 
     private void sendTextErrorCategoryValidate(BotContext botContext) {

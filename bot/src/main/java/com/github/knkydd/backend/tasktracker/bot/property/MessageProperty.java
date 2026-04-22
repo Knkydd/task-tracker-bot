@@ -107,13 +107,13 @@ public class MessageProperty {
             private String categoryValidate;
 
             @NotNull
-            private String CategorySave;
+            private String categorySave;
 
             @NotNull
-            private String DescriptionValidate;
+            private String descriptionValidate;
 
             @NotNull
-            private String DescriptionSaveTask;
+            private String descriptionSaveTask;
         }
 
         @Getter

@@ -1,4 +1,4 @@
-package com.github.knkydd.backend.tasktracker.bot.validator;
+package com.github.knkydd.backend.tasktracker.bot.utility.validator;
 
 import lombok.experimental.UtilityClass;
 
@@ -7,6 +7,10 @@ import java.util.regex.Pattern;
 
 @UtilityClass
 public class CategoryValidator {
+
+    private static final String pattern = "[0-9]+";
+
+    private static final Pattern pt = Pattern.compile(pattern);
 
     public static void checkValidated(String category) {
         checkCategoryOnNull(category);
@@ -27,8 +31,6 @@ public class CategoryValidator {
     }
 
     private static void checkCategoryOnNumber(String category) {
-        String pattern = "[0-9]+";
-        Pattern pt = Pattern.compile(pattern);
         Matcher matcher = pt.matcher(category);
         if (matcher.find()) {
             throw new IllegalArgumentException(String.format("В переданной категории %s есть числа", category));
