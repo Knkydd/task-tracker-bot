@@ -1,8 +1,8 @@
 services:
   bot:
     build:
-      context: .
-      dockerfile: bot/Dockerfile
+      context: ..
+      dockerfile: ../bot/Dockerfile
     ports:
       - "8081:8081"
     environment:
@@ -11,8 +11,8 @@ services:
 
   core:
     build:
-      context: .
-      dockerfile: core/Dockerfile
+      context: ..
+      dockerfile: ../core/Dockerfile
     ports:
       - "8082:8082"
     environment:
