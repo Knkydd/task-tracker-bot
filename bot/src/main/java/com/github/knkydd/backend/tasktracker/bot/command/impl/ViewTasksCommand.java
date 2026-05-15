@@ -32,6 +32,9 @@ public class ViewTasksCommand implements Command {
         } catch (TaskGetException e) {
             log.error(e.getMessage());
             sendTextErrorGettingTasks(botContext);
+        } catch (Exception e){
+            log.error("Возникла неизвестная ошибка. {}", e.getMessage());
+            sendTextUnknownError(botContext);
         }
     }
 
@@ -46,6 +49,11 @@ public class ViewTasksCommand implements Command {
 
     private void sendTextErrorGettingTasks(BotContext botContext) {
         String text = property.getErrors().getViewErrors().getGettingTasks();
+        botContext.reply(text);
+    }
+
+    private void sendTextUnknownError(BotContext botContext){
+        String text = property.getErrors().getUnknownError();
         botContext.reply(text);
     }
 

@@ -1,6 +1,8 @@
 package com.github.knkydd.backend.tasktracker.core.repository.jdbc;
 
 import com.github.knkydd.backend.tasktracker.core.model.Task;
+import com.github.knkydd.backend.tasktracker.core.model.TaskCategory;
+import com.github.knkydd.backend.tasktracker.core.model.User;
 import com.github.knkydd.backend.tasktracker.core.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -23,7 +25,22 @@ public class JdbcTaskRepository implements TaskRepository {
     public List<Task> findAllByUserChatId(long chatId) {
         return jdbcClient.sql(SQL_FIND_TASKS)
                 .param("chatId", chatId)
-                .query(Task.class).list();
+                .query((resultSet, num) -> {
+                    Task task = new Task();
+                    task.setTaskId(resultSet.getLong("task_id"));
+                    task.setDescription(resultSet.getString("description"));
+
+                    User user = new User();
+                    user.setChatId(resultSet.getLong("chat_id"));
+                    task.setUser(user);
+
+                    //Внимание! Я здесь null на id оставил
+                    TaskCategory category = new TaskCategory();
+                    category.setName(resultSet.getString("name"));
+                    task.setCategory(category);
+
+                    return task;
+                }).list();
     }
 
     @Override
