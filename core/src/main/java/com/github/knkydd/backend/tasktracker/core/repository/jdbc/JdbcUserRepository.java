@@ -31,7 +31,7 @@ public class JdbcUserRepository implements UserRepository {
         long chatId = user.getChatId();
         jdbcClient.sql(SQL_SAVE_USER)
                 .param("chatId", chatId)
-                .query();
+                .update();
         return user;
     }
 }

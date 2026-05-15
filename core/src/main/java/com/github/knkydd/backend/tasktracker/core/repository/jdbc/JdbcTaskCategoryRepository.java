@@ -22,7 +22,7 @@ public class JdbcTaskCategoryRepository implements TaskCategoryRepository {
     @Override
     public Optional<TaskCategory> findByName(String categoryName) {
         return jdbcClient.sql(SQL_FIND_TASK_CATEGORY)
-                .param(categoryName)
+                .param("categoryName", categoryName)
                 .query(TaskCategory.class).optional();
     }
 
