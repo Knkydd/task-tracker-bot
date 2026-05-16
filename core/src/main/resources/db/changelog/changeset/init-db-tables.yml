@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-table
+      author: Alexander_Pesterev
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    unique: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: tasks
+            columns:
+              - column:
+                  name: task_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+        - addForeignKeyConstraint:
+            baseTableName: tasks
+            baseColumnNames: chat_id
+            referencedTableName: users
+            referencedColumnNames: chat_id
+            constraintName: fk_tasks_users
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: tasks
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: category_id
+            constraintName: fk_tasks_categories
+            onDelete: CASCADE

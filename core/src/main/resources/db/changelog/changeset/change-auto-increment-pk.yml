@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-auto-increment-pk
+      author: Alexander_Pesterev
+      changes:
+        - addAutoIncrement:
+            tableName: categories
+            columnName: category_id
+            columnDataType: bigint
+        - addAutoIncrement:
+            tableName: tasks
+            columnName: task_id
+            columnDataType: bigint

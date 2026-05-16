@@ -1,0 +1,9 @@
+type: object
+required: [code, message]
+properties:
+  code:
+    type: integer
+    example: 404
+  message:
+    type: string
+    default: 'Задача не найдена'

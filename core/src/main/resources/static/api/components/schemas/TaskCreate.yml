@@ -1,0 +1,7 @@
+type: object
+required: [category, description]
+properties:
+  category:
+    type: string
+  description:
+    type: string
