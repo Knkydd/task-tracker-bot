@@ -1,7 +1,6 @@
 package com.github.knkydd.backend.tasktracker.bot.unit.validator;
 
-import com.github.knkydd.backend.tasktracker.bot.validator.CategoryValidator;
-import com.github.knkydd.backend.tasktracker.bot.validator.DescriptionValidator;
+import com.github.knkydd.backend.tasktracker.bot.utility.validator.DescriptionValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

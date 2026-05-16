@@ -26,6 +26,8 @@ public class UserService {
             return user.orElseGet(() -> userRepository.saveAndFlush(new User(chatId)));
         } catch (DataAccessException e) {
             throw new ServerException("Возникла ошибка создания или сохранения пользователя. " + e.getMessage());
+        } catch (Exception e){
+            throw new ServerException("Возникла неизвестная ошибка. " + e.getMessage());
         }
     }
 }

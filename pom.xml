@@ -39,6 +39,7 @@
 
         <telegram-bot-api.version>9.5.0</telegram-bot-api.version>
         <swagger-ui.version>3.0.3</swagger-ui.version>
+        <testcontainer-postgresql.version>1.21.4</testcontainer-postgresql.version>
     </properties>
 
     <dependencyManagement>
@@ -52,6 +53,11 @@
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${swagger-ui.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${testcontainer-postgresql.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

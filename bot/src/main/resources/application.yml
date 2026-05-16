@@ -4,7 +4,7 @@ server:
 
 app:
   core:
-    baseUri: ${CORE_URL:"http://localhost:8082"}
+    baseUri: ${CORE_URL:http://localhost:8082}
   properties:
     uri: "https://api.telegram.org/bot"
     token: "${TELEGRAM_BOT_TOKEN}"

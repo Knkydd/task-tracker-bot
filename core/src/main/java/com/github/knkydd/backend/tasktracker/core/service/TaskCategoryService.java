@@ -33,6 +33,8 @@ public class TaskCategoryService {
             }
         } catch (DataAccessException e) {
             throw new ServerException("Возникла ошибка создания или сохранения категории" + e.getMessage());
+        } catch (Exception e) {
+            throw new ServerException("Возникла неизвестная ошибка. " + e.getMessage());
         }
     }
 }

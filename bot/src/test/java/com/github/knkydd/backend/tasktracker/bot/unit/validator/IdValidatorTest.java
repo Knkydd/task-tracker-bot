@@ -2,7 +2,7 @@ package com.github.knkydd.backend.tasktracker.bot.unit.validator;
 
 
 import com.github.knkydd.backend.tasktracker.bot.exception.NotANumberException;
-import com.github.knkydd.backend.tasktracker.bot.validator.IdValidator;
+import com.github.knkydd.backend.tasktracker.bot.utility.validator.IdValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

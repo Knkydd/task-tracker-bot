@@ -12,5 +12,5 @@ public interface TaskRepository {
 
     Task saveAndFlush(Task task);
 
-    void deleteByTaskIdAndUserChatId(long taskId, long chatId);
+    long deleteByTaskIdAndUserChatId(long taskId, long chatId);
 }

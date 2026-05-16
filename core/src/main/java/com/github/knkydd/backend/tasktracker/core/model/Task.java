@@ -1,6 +1,7 @@
 package com.github.knkydd.backend.tasktracker.core.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tasks")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
     @Id

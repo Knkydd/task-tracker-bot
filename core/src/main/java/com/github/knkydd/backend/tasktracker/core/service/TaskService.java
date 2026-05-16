@@ -28,13 +28,14 @@ public class TaskService {
     private final TaskCategoryService taskCategoryService;
 
     @Transactional
-    public void deleteTask(long taskId, long chatId) {
+    public long deleteTask(long taskId, long chatId) {
         try {
             log.info("Проверка существования задачи с номером {} пользователя {}", taskId, chatId);
             checkTaskExists(taskId, chatId);
             log.info("Попытка удаления задачи задачи с номером {} пользователя {} ...", taskId, chatId);
-            taskRepository.deleteByTaskIdAndUserChatId(taskId, chatId);
+            long count = taskRepository.deleteByTaskIdAndUserChatId(taskId, chatId);
             log.info("Удаление задачи с номером {} пользователя {} успешно", taskId, chatId);
+            return count;
         } catch (DataAccessException e) {
             throw new ServerException(
                     String.format("Возникла ошибка удаления задачи с номером %s пользователя %s.", taskId, chatId)
@@ -43,7 +44,7 @@ public class TaskService {
     }
 
     @Transactional
-    public void saveTask(long chatId, TaskRequestDto task) {
+    public long saveTask(long chatId, TaskRequestDto task) {
         try {
             User user = userService.getOrCreateUser(chatId);
             TaskCategory category = taskCategoryService.getOrCreateCategory(new TaskCategory(task.category()));
@@ -51,6 +52,7 @@ public class TaskService {
             log.info("Попытка сохранения задачи");
             taskRepository.saveAndFlush(newTask);
             log.info("Задача успешно сохранена");
+            return 1;
         } catch (DataAccessException e) {
             throw new ServerException("Возникла ошибка сохранения задачи. " + e.getMessage());
         }
@@ -63,7 +65,7 @@ public class TaskService {
             List<Task> tasks = taskRepository.findAllByUserChatId(chatId);
             if (tasks == null || tasks.isEmpty()) {
                 log.info("Задач у пользователя {} не обнаружено", chatId);
-                return Collections.<Task>emptyList();
+                return Collections.emptyList();
             }
             log.info("Задачи пользователя {} были найдены", chatId);
             return tasks;
